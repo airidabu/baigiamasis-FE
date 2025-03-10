@@ -1,0 +1,89 @@
+{
+  "authors": [
+    {
+      "id": "1",
+      "name": "J.K. Rowling",
+      "birthDate": {
+        "year": 1965,
+        "month": 7,
+        "day": 31
+      },
+      "photoUrl": "https://images.gr-assets.com/authors/1596216614p8/1077326.jpg"
+    },
+    {
+      "id": "2",
+      "name": "Sarah J. Maas",
+      "birthDate": {
+        "year": 1986,
+        "month": 3,
+        "day": 5
+      },
+      "photoUrl": "https://images.gr-assets.com/authors/1582137198p8/3433047.jpg"
+    },
+    {
+      "id": "3",
+      "name": "Suzanne Collins",
+      "birthDate": {
+        "year": 1962,
+        "month": 8,
+        "day": 11
+      },
+      "photoUrl": "https://images.gr-assets.com/authors/1630199330p8/153394.jpg"
+    }
+  ],
+  "books": [
+    {
+      "id": "1",
+      "authorId": "1",
+      "title": "Harry Potter and the Philosophers' Stone",
+      "genreId": "1",
+      "imageUrl": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1170803558l/72193.jpg"
+    },
+    {
+      "id": "2",
+      "authorId": "2",
+      "title": "Throne of Glass",
+      "genreId": "1",
+      "imageUrl": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566495i/76703559.jpg"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "1",
+      "bookId": "1",
+      "userId": "1",
+      "text": "Very Nice",
+      "rating": 5
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "email": "john@doe.com"
+    },
+    {
+      "id": "2",
+      "name": "Jane Doe",
+      "email": "jane@doe.com"
+    }
+  ],
+  "genres": [
+    {
+      "id": "1",
+      "name": "fantasy"
+    },
+    {
+      "id": "2",
+      "name": "romance"
+    },
+    {
+      "id": "3",
+      "name": "history"
+    },
+    {
+      "id":"4",
+      "name": "sci-fi"
+    }
+  ]
+}
