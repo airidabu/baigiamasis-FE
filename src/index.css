@@ -1,0 +1,16 @@
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+html {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    background-color: #E3E2DF;
+    color: #E3AFBC;
+}
+
+body {
+    margin: 0;
+}
