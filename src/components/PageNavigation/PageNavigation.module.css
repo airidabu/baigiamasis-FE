@@ -1,0 +1,28 @@
+nav {
+    display: flex;
+    gap: 20px;
+    padding: 10px;
+    background-color: #5D001E;
+    justify-content: space-around;
+}
+
+nav a {
+    text-decoration: none;
+    color: #E3AFBC;
+    font-size: 20px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+nav a:hover {
+    color: #EE4C7C;
+    transform: scale(1.1);
+}
+
+nav a:active {
+    color: #FF5722;
+}
+
+nav a.active {
+    color: #EE4C7C;
+    font-weight: bold;
+}
