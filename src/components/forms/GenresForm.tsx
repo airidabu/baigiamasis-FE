@@ -3,6 +3,7 @@ const GenresForm: React.FC = () => {
         <form>
             <label htmlFor="genre-name">Genre Name</label>
             <input type="text" id="genre-name" name="genre-name" />
+            <button>Submit</button>
         </form>
     )
 }
