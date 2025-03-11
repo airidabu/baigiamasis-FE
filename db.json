@@ -50,22 +50,19 @@
   "reviews": [
     {
       "id": "1",
+      "nickname": "John Doe",
+      "email": "john@doe.com",
       "bookId": "1",
-      "userId": "1",
       "text": "Very Nice",
       "rating": 5
-    }
-  ],
-  "users": [
-    {
-      "id": "1",
-      "name": "John Doe",
-      "email": "john@doe.com"
     },
     {
       "id": "2",
-      "name": "Jane Doe",
-      "email": "jane@doe.com"
+      "nickname": "Jane Doe",
+      "email": "jane@doe.com",
+      "bookId": "3",
+      "text": "Not bad, not great",
+      "rating": "3"
     }
   ],
   "genres": [
