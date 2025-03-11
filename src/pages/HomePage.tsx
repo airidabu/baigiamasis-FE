@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import BooksForm from "../components/forms/BooksForm.tsx";
 
 const Container = styled.div`
     display: flex;
@@ -18,6 +19,7 @@ const HomePage: React.FC = () => {
         <Container>
             <h1>Welcome to the Books Page</h1>
             <img src="src/assets/smiley-face.png" alt="smiley face"/>
+            <BooksForm/>
         </Container>
     )
 }

@@ -1,4 +1,4 @@
-import Author from "../models/Author.ts";
+import Author from "../types/Author.ts";
 import axios from "axios";
 import {API_URL} from "../config.ts";
 
