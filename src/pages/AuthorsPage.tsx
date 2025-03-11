@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
 import ItemsList from "../components/ItemsList.tsx";
-import Author from "../models/Author.ts";
+import Author from "../types/Author.ts";
 import {getAuthors} from "../api/authors.ts";
 import {Link} from "react-router";
 

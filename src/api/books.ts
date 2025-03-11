@@ -1,6 +1,6 @@
 import axios from "axios";
 import {API_URL} from "../config.ts";
-import Book from "../models/Book.ts";
+import Book from "../types/Book.ts";
 
 export const getAuthorBooks = async (authorId: string): Promise<Book[]> => {
     try {

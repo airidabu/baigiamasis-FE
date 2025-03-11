@@ -1,8 +1,8 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
-import Author from "../models/Author.ts";
+import Author from "../types/Author.ts";
 import {getAuthor} from "../api/authors.ts";
-import Book from "../models/Book.ts";
+import Book from "../types/Book.ts";
 import {getAuthorBooks} from "../api/books.ts";
 import BookCard from "../components/BookCard.tsx";
 import ItemsList from "../components/ItemsList.tsx";
