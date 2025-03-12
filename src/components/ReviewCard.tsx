@@ -33,7 +33,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({nickname, email, bookId, text, r
 
     useEffect(() => {
         getBook(bookId).then(fetchedBook => setBook(fetchedBook));
-    }, []);
+    }, [bookId]);
 
     return (
         <>
