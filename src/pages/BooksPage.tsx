@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import {getBooks} from "../api/books.ts";
 import {Link} from "react-router";
 import BookCard from "../components/BookCard.tsx";
+import ItemsContainer from "../components/ItemsContainer.tsx";
 
 const BooksPage:React.FC = () =>{
     const [books, setBooks] = useState<Book[]>([]);
@@ -20,9 +21,7 @@ const BooksPage:React.FC = () =>{
         </Link>
     ))
     return (
-        <div>
-            {createBooksCards}
-        </div>
+        <ItemsContainer children={createBooksCards}></ItemsContainer>
     )
 }
 

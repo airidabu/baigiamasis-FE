@@ -11,6 +11,11 @@ const Container = styled.div`
     padding: 30px;
     gap: 20px;
     
+    a {
+        text-decoration: none;
+        color: #5D001E;
+    }
+    
     @media (max-width: 1024px) {
         grid-template-columns: repeat(3, 1fr);
     }
