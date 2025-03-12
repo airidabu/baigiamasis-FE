@@ -6,6 +6,8 @@ import AuthorsPage from "./pages/AuthorsPage.tsx";
 import AuthorPage from "./pages/AuthorPage.tsx";
 import GenresPage from "./pages/GenresPage.tsx";
 import BooksPage from "./pages/BooksPage.tsx";
+import BookPage from "./pages/BookPage.tsx";
+import ReviewsPage from "./pages/ReviewsPage.tsx";
 
 const App: React.FC = () => {
 
@@ -18,7 +20,8 @@ const App: React.FC = () => {
             <Route path="/authors/:id" element={<AuthorPage />}/>
             <Route path="/genres" element={<GenresPage/>}/>
             <Route path="/books" element={<BooksPage />}/>
-            <Route path="/books/:id" element=""/>
+            <Route path="/books/:id" element={<BookPage/>}/>
+            <Route path="/reviews" element={<ReviewsPage/>}/>
           </Route>
         </Routes>
       </Router>
