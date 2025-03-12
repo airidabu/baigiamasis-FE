@@ -62,7 +62,7 @@
       "email": "jane@doe.com",
       "bookId": "3",
       "text": "Not bad, not great",
-      "rating": "3"
+      "rating": 3
     }
   ],
   "genres": [
