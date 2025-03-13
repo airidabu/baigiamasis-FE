@@ -21,3 +21,22 @@ export const getReview = async (id: string): Promise<Review | undefined> => {
         return undefined;
     }
 }
+
+export const getBookReviews = async (id: string) => {
+    try {
+        const {data} = await axios.get(`${API_URL}/books/${id}?_embed=reviews`);
+        return data;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+}
+
+export const addReview = async (newReview: Review) => {
+    try {
+        const {data} = await axios.post(`${API_URL}/reviews`, newReview);
+        return data;
+    } catch (error) {
+        console.error("Error adding review",error);
+    }
+}

@@ -21,3 +21,12 @@ export const getAuthor = async (id: string): Promise<Author | undefined> => {
         return undefined;
     }
 }
+
+export const addAuthor = async (newAuthor: Author) => {
+    try {
+        const {data} = await axios.post(`${API_URL}/authors`, newAuthor);
+        console.log(data, "added successfully");
+    } catch (error) {
+        console.error("Error adding author", error);
+    }
+}

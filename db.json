@@ -29,6 +29,16 @@
         "day": 11
       },
       "photoUrl": "https://images.gr-assets.com/authors/1630199330p8/153394.jpg"
+    },
+    {
+      "id": "9dc7",
+      "name": "aaaa",
+      "birthDate": {
+        "year": 1997,
+        "month": 12,
+        "day": 3
+      },
+      "photoUrl": "google.com"
     }
   ],
   "books": [
@@ -79,7 +89,7 @@
       "name": "history"
     },
     {
-      "id":"4",
+      "id": "4",
       "name": "sci-fi"
     }
   ]

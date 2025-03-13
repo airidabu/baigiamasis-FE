@@ -4,6 +4,17 @@ import ItemsList from "../components/ItemsList.tsx";
 import Author from "../types/Author.ts";
 import {getAuthors} from "../api/authors.ts";
 import {Link} from "react-router";
+import AuthorForm from "../components/forms/AuthorForm.tsx";
+import styled from "styled-components";
+
+const Wrapper = styled.div`
+    display: flex;
+    gap: 30px;
+    justify-content: space-around;
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+`
 
 const AuthorsPage: React.FC = () => {
     const [authors, setAuthors] = useState<Author[]>([]);
@@ -14,10 +25,17 @@ const AuthorsPage: React.FC = () => {
 
     const createAuthorElements = authors
         .map((author: Author, index) => (
-            <Link to={`/authors/${author.id}`}><li key={index}>{author.name}</li></Link>
+            <Link key={index} to={`/authors/${author.id}`}><li>{author.name}</li></Link>
         ));
 
-    return <ItemsList children={createAuthorElements}></ItemsList>
+    return (
+        <Wrapper>
+            <ItemsList children={createAuthorElements}></ItemsList>
+            <div>
+                <AuthorForm/>
+            </div>
+        </Wrapper>
+    )
 }
 
 export default AuthorsPage;
