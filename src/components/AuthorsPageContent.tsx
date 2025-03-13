@@ -21,7 +21,7 @@ const AuthorsPageContent: React.FC = () => {
 
     useEffect(() => {
         fetchAuthors();
-    }, []);
+    }, [fetchAuthors]);
 
     const createAuthorElements = state.authors
         .map((author: Author, index) => (
