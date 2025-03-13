@@ -26,7 +26,9 @@ export const addAuthor = async (newAuthor: Author) => {
     try {
         const {data} = await axios.post(`${API_URL}/authors`, newAuthor);
         console.log(data, "added successfully");
+        return data;
     } catch (error) {
         console.error("Error adding author", error);
+        return undefined;
     }
 }
