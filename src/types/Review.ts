@@ -1,5 +1,5 @@
 interface Review {
-    id: string;
+    id?: string;
     nickname: string;
     email: string;
     bookId: string;

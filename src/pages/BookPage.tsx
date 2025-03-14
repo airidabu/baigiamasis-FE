@@ -5,10 +5,14 @@ import {getBook} from "../api/books.ts";
 import {getBookReviews} from "../api/reviews.ts";
 import Review from "../types/Review.ts";
 
+interface bookWithReviews extends Book {
+    reviews: Review[];
+}
+
 const BookPage: React.FC = () => {
     const {id} = useParams();
     const [book, setBook] = useState<Book | undefined>();
-    const [bookReviews, setBookReviews] = useState();
+    const [bookReviews, setBookReviews] = useState<bookWithReviews | undefined>();
 
     useEffect(() => {
         getBook(id!).then(fetchedBook => setBook(fetchedBook));
@@ -16,7 +20,7 @@ const BookPage: React.FC = () => {
     },[id])
 
     const createBookCard = () => {
-        if (book) {
+        if (book && bookReviews) {
             return (
                 <div>
                     <h1>{book.title}</h1>
@@ -30,8 +34,8 @@ const BookPage: React.FC = () => {
                         ))}
                     </div>
                 </div>
-             )
-         } else {
+            )
+        } else {
             return <h1>Book Not Found</h1>
         }
     }

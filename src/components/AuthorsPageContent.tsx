@@ -17,15 +17,18 @@ const Wrapper = styled.div`
 `
 
 const AuthorsPageContent: React.FC = () => {
-    const {state, fetchAuthors} = useAuthors();
+    const {state, fetchAuthors,removeAuthor } = useAuthors();
 
     useEffect(() => {
         fetchAuthors();
-    }, [fetchAuthors]);
+    }, []);
 
     const createAuthorElements = state.authors
         .map((author: Author, index) => (
-            <Link key={index} to={`/authors/${author.id}`}><li>{author.name}</li></Link>
+            <>
+                <Link key={index} to={`/authors/${author.id}`}><li>{author.name}</li></Link>
+                <button key={index} onClick={() => removeAuthor(author.id!)}>Delete</button>
+            </>
         ));
 
     return (

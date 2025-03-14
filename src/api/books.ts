@@ -36,8 +36,18 @@ export const addBook = async (newBook: Book) => {
     try {
         const {data} = await axios.post(`${API_URL}/book`, newBook);
         console.log(data, "added successfully");
+        return data;
     } catch (error) {
         console.error("Error adding book", error);
     }
 }
 
+export const deleteBook = async (id: string): Promise<void> => {
+    try {
+        const {data} = await axios.delete(`${API_URL}/books/${id}`);
+        console.log(data, "deleted successfully");
+        return data;
+    } catch (error) {
+        console.error("Error deleting book", error);
+    }
+}

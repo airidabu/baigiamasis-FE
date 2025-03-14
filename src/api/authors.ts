@@ -32,3 +32,13 @@ export const addAuthor = async (newAuthor: Author) => {
         return undefined;
     }
 }
+
+export const deleteAuthor = async (id: string): Promise<void> => {
+    try {
+        const {data} = await axios.delete(`${API_URL}/authors/${id}`);
+        console.log(data, "deleted successfully");
+        return data;
+    } catch (error) {
+        console.error("Error deleting author", error);
+    }
+}
