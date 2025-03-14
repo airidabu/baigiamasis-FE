@@ -1,17 +1,8 @@
-import styled from "styled-components";
 import GenresForm from "./forms/GenresForm.tsx";
 import {useGenres} from "../contexts/GenresContext.tsx";
 import {useEffect} from "react";
 import ItemsList from "./ItemsList.tsx";
 
-const Wrapper = styled.div`
-    display: flex;
-    gap: 30px;
-    justify-content: space-around;
-    width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-`
 const GenresPageContent: React.FC = () => {
     const {state, fetchGenres, removeGenre} = useGenres();
 
@@ -26,12 +17,12 @@ const GenresPageContent: React.FC = () => {
     ))
 
     return (
-        <Wrapper>
+        <div>
             <ItemsList children={createGenreElements}></ItemsList>
             <div>
                 <GenresForm/>
             </div>
-        </Wrapper>
+        </div>
     )
 }
 

@@ -5,16 +5,6 @@ import {Link} from "react-router";
 import BookCard from "./BookCard.tsx";
 import ItemsContainer from "./ItemsContainer.tsx";
 import BooksForm from "./forms/BooksForm.tsx";
-import styled from "styled-components";
-
-const Wrapper = styled.div`
-    display: flex;
-    gap: 30px;
-    justify-content: space-around;
-    width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-`
 
 const BooksPageContent: React.FC = () => {
     const {state, fetchBooks, removeBook} = useBooks();
@@ -35,12 +25,12 @@ const BooksPageContent: React.FC = () => {
         </div>
     ))
     return (
-        <Wrapper>
+        <div>
             <ItemsContainer children={createBooksCards}></ItemsContainer>
             <div>
                 <BooksForm/>
             </div>
-        </Wrapper>
+        </div>
     )
 }
 
