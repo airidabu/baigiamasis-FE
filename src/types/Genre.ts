@@ -1,5 +1,5 @@
 interface Genre {
-    id: string;
+    id?: string;
     name: string;
 }
 

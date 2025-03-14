@@ -44,8 +44,9 @@ export const addReview = async (newReview: Review) => {
 export const deleteReview = async (id: string) => {
     try {
         const {data} = await axios.delete(`${API_URL}/reviews/${id}`);
+        console.log(data, "deleted successfully");
         return data;
     } catch (error) {
-        console.error(error);
+        console.error("Error deleting review",error);
     }
 }

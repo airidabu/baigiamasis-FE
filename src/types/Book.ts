@@ -1,5 +1,5 @@
 interface Book {
-    id: string;
+    id?: string;
     authorId: string;
     imageUrl: string;
     title: string;
