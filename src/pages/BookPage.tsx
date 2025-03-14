@@ -4,13 +4,15 @@ import Book from "../types/Book.ts";
 import {getBook} from "../api/books.ts";
 import {getBookReviews} from "../api/reviews.ts";
 import Review from "../types/Review.ts";
+import {ReviewsProvider} from "../contexts/ReviewsContext.tsx";
+import ReviewsContent from "../components/ReviewsContent.tsx";
 
 interface bookWithReviews extends Book {
     reviews: Review[];
 }
 
 const BookPage: React.FC = () => {
-    const {id} = useParams();
+    const {id} = useParams<{id: string}>();
     const [book, setBook] = useState<Book | undefined>();
     const [bookReviews, setBookReviews] = useState<bookWithReviews | undefined>();
 
@@ -27,12 +29,11 @@ const BookPage: React.FC = () => {
                     <div>
                         <img src={book.imageUrl} alt="book cover"/>
                     </div>
-                    <h2>Reviews</h2>
-                    <div>
-                        {bookReviews.reviews.map((review: Review) => (
-                            <div key={review.id}>{review.text}</div>
-                        ))}
-                    </div>
+                    <ReviewsProvider>
+                        <ReviewsContent
+                            bookId={book.id ?? ""}
+                        />
+                    </ReviewsProvider>
                 </div>
             )
         } else {

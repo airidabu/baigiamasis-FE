@@ -1,12 +1,12 @@
 import {ReviewAction, reviewReducer, ReviewState, initialState} from "../reducers/reviewReducer.ts";
-import {getReviews, addReview, deleteReview} from "../api/reviews.ts";
+import {addReview, deleteReview, getBookReviews} from "../api/reviews.ts";
 import Review from "../types/Review.ts";
 import {createContext, Dispatch, ReactNode, useContext, useReducer} from "react";
 
 type ReviewsContextType = {
     state: ReviewState;
     dispatch: Dispatch<ReviewAction>
-    fetchReviews: () => Promise<void>;
+    fetchReviews: (id:string) => Promise<void>;
     createReview: (review: Omit<Review, "id">) => Promise<void>;
     removeReview: (id: string) => Promise<void>;
 }
@@ -16,9 +16,9 @@ const ReviewsContext = createContext<ReviewsContextType | undefined>(undefined);
 export const ReviewsProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     const [state, dispatch] = useReducer(reviewReducer, initialState);
 
-    const fetchReviews = async () => {
+    const fetchReviews = async (id:string) => {
         try {
-            const reviews = await getReviews();
+            const reviews = await getBookReviews(id);
             dispatch({type: "GET_REVIEWS", payload: reviews});
         } catch (error) {
             console.error(error);
@@ -55,4 +55,5 @@ export const useReviews = () => {
     if (!ctx) {
         throw new Error("useReviews must be used within the context");
     }
+    return ctx;
 }
