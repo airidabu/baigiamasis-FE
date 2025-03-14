@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {addAuthor} from "../../api/authors.ts";
+import {useAuthors} from "../../contexts/AuthorsContext.tsx";
 
 const AuthorForm: React.FC = () => {
     const [form, setForm] = useState({
@@ -17,6 +17,8 @@ const AuthorForm: React.FC = () => {
         })
     }
 
+    const {createAuthor} = useAuthors();
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -30,7 +32,7 @@ const AuthorForm: React.FC = () => {
             photoUrl:form.profilePhoto
         }
 
-        addAuthor(newAuthor).then(() => {
+        createAuthor(newAuthor).then(() => {
             console.log("Successfully added a new author", newAuthor);
         });
 
