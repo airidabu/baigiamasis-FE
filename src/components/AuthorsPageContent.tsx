@@ -24,11 +24,11 @@ const AuthorsPageContent: React.FC = () => {
     }, []);
 
     const createAuthorElements = state.authors
-        .map((author: Author, index) => (
-            <>
-                <Link key={index} to={`/authors/${author.id}`}><li>{author.name}</li></Link>
-                <button key={index} onClick={() => removeAuthor(author.id!)}>Delete</button>
-            </>
+        .map((author: Author) => (
+            <div key={author.id}>
+                <Link  to={`/authors/${author.id}`}><li>{author.name}</li></Link>
+                <button  onClick={() => removeAuthor(author.id!)}>❌</button>
+            </div>
         ));
 
     return (

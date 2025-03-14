@@ -8,7 +8,8 @@ export type AuthorState = {
 export type AuthorsAction =
     | {type: "GET_AUTHORS"; payload: Author[]}
     | {type: "ADD_AUTHOR"; payload: Author}
-    | {type: "REMOVE_AUTHOR"; payload: string};
+    | {type: "REMOVE_AUTHOR"; payload: string}
+    | {type: "EDIT_AUTHOR"; payload: Author}
 
 export const initialState: AuthorState = {
     authors: [],

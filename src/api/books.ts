@@ -34,7 +34,7 @@ export const getBook = async (id: string): Promise<Book | undefined> => {
 
 export const addBook = async (newBook: Book) => {
     try {
-        const {data} = await axios.post(`${API_URL}/book`, newBook);
+        const {data} = await axios.post(`${API_URL}/books`, newBook);
         console.log(data, "added successfully");
         return data;
     } catch (error) {
