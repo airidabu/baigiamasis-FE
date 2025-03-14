@@ -1,27 +1,11 @@
-import Book from "../types/Book.ts";
-import {useEffect, useState} from "react";
-import {getBooks} from "../api/books.ts";
-import {Link} from "react-router";
-import BookCard from "../components/BookCard.tsx";
-import ItemsContainer from "../components/ItemsContainer.tsx";
+import {BooksProvider} from "../contexts/BooksContext.tsx";
+import BooksPageContent from "../components/BooksPageContent.tsx";
 
 const BooksPage:React.FC = () =>{
-    const [books, setBooks] = useState<Book[]>([]);
-
-    useEffect(()=>{
-        getBooks().then(fetchedBooks => setBooks(fetchedBooks));
-    },[])
-
-    const createBooksCards = books.map((book: Book) => (
-        <Link to={`/books/${book.id}`} key={book.id}>
-            <BookCard
-            title={book.title}
-            imageUrl={book.imageUrl}
-            />
-        </Link>
-    ))
-    return (
-        <ItemsContainer children={createBooksCards}></ItemsContainer>
+    return(
+        <BooksProvider>
+            <BooksPageContent/>
+        </BooksProvider>
     )
 }
 

@@ -42,3 +42,14 @@ export const deleteAuthor = async (id: string): Promise<void> => {
         console.error("Error deleting author", error);
     }
 }
+
+export const updateAuthor = async (editedAuthor: Author) => {
+    try {
+        const {data} = await axios.put(`${API_URL}/authors/${editedAuthor.id}`, editedAuthor);
+        console.log(data, "added successfully");
+        return data;
+    } catch (error) {
+        console.error("Error adding author", error);
+        return undefined;
+    }
+}
