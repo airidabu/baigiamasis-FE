@@ -1,4 +1,4 @@
-import PageNavigation from "./PageNavigation/PageNavigation.tsx";
+import PageNavigation from "./PageNavigation.tsx";
 import {Outlet} from "react-router";
 
 const Layout: React.FC = () => {
