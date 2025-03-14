@@ -1,4 +1,4 @@
-import {AuthorsAction, authorsReducer, AuthorState, initialState} from "../reducers/authorReducer.tsx";
+import {AuthorsAction, authorsReducer, AuthorState, initialState} from "../reducers/authorReducer.ts";
 import {getAuthors, addAuthor} from "../api/authors.ts";
 import Author from "../types/Author.ts";
 import {createContext, Dispatch, ReactNode, useContext, useReducer} from "react";
