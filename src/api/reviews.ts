@@ -40,3 +40,12 @@ export const addReview = async (newReview: Review) => {
         console.error("Error adding review",error);
     }
 }
+
+export const deleteReview = async (id: string) => {
+    try {
+        const {data} = await axios.delete(`${API_URL}/reviews/${id}`);
+        return data;
+    } catch (error) {
+        console.error(error);
+    }
+}

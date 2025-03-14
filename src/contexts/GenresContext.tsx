@@ -54,7 +54,7 @@ export const useGenres = () => {
     const ctx = useContext(GenresContext);
     if(!ctx) {
         throw new Error("useGenres must be used within the context");
-    };
+    }
 
     return ctx;
 }
