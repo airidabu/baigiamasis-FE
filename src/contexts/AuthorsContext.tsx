@@ -2,12 +2,14 @@ import {AuthorsAction, authorsReducer, AuthorState, initialState} from "../reduc
 import {getAuthors, addAuthor} from "../api/authors.ts";
 import Author from "../types/Author.ts";
 import {createContext, Dispatch, ReactNode, useContext, useReducer} from "react";
+import {deleteBook} from "../api/books.ts";
 
 type AuthorsContextType = {
     state: AuthorState;
     dispatch: Dispatch<AuthorsAction>;
     fetchAuthors: () => Promise<void>;
     createAuthor: (author: Omit<Author, "id">) => Promise<void>;
+    removeAuthor: (id:string) => Promise<void>;
 }
 
 const AuthorsContext = createContext<AuthorsContextType | undefined>(undefined);
@@ -33,8 +35,17 @@ export const AuthorsProvider: React.FC<{children: ReactNode}> = ({children}) => 
         }
     };
 
+    const removeAuthor = async (id: string) => {
+        try {
+            await deleteBook(id);
+            dispatch({type: "REMOVE_AUTHOR", payload: id})
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
-        <AuthorsContext.Provider value={{state, dispatch, fetchAuthors, createAuthor}}>
+        <AuthorsContext.Provider value={{state, dispatch, fetchAuthors, createAuthor, removeAuthor}}>
             {children}
         </AuthorsContext.Provider>
     )

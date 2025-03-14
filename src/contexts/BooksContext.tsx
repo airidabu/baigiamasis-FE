@@ -36,7 +36,7 @@ export const BooksProvider: React.FC<{children: ReactNode}> = ({ children }) => 
 
     const removeBook = async (bookId: string) => {
         try {
-            deleteBook(bookId);
+            await deleteBook(bookId);
             dispatch({type: "DELETE_BOOK", payload: bookId})
         } catch (error) {
             console.error(error);
