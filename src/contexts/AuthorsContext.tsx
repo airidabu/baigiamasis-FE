@@ -1,8 +1,7 @@
 import {AuthorsAction, authorsReducer, AuthorState, initialState} from "../reducers/authorReducer.ts";
-import {getAuthors, addAuthor} from "../api/authors.ts";
+import {getAuthors, addAuthor, deleteAuthor} from "../api/authors.ts";
 import Author from "../types/Author.ts";
 import {createContext, Dispatch, ReactNode, useContext, useReducer} from "react";
-import {deleteBook} from "../api/books.ts";
 
 type AuthorsContextType = {
     state: AuthorState;
@@ -37,7 +36,7 @@ export const AuthorsProvider: React.FC<{children: ReactNode}> = ({children}) => 
 
     const removeAuthor = async (id: string) => {
         try {
-            await deleteBook(id);
+            await deleteAuthor(id);
             dispatch({type: "REMOVE_AUTHOR", payload: id})
         } catch (error) {
             console.error(error);
