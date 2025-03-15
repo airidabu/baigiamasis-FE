@@ -2,6 +2,9 @@ import {useEffect, useState, CSSProperties} from "react";
 import {getBook} from "../api/books.ts";
 import Book from "../types/Book.ts";
 import {BounceLoader} from "react-spinners";
+import {Rating} from "@mui/material";
+import {styled} from "@mui/material/styles";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const override: CSSProperties = {
     display: "block",
@@ -16,6 +19,15 @@ interface ReviewCardProps {
     text: string;
     rating: number;
 }
+
+const StyledRating = styled(Rating)(({ theme }) => ({
+    "& .MuiRating-iconFilled": {
+        color: theme.palette.secondary.main,
+    },
+    "& .MuiRating-iconHover": {
+        color: theme.palette.secondary.dark,
+    }
+}));
 
 const ReviewCard: React.FC<ReviewCardProps> = ({nickname, email, bookId, text, rating}) => {
     const [book, setBook] = useState<Book>();
@@ -33,6 +45,13 @@ const ReviewCard: React.FC<ReviewCardProps> = ({nickname, email, bookId, text, r
                         <div>Time posted </div>
                         <p>{text}</p>
                         <p>{rating}</p>
+                        <StyledRating
+                            name="customized-rating"
+                            value={rating}
+                            readOnly
+                            icon={<FavoriteIcon fontSize="inherit" />}
+                            emptyIcon={<FavoriteIcon fontSize="inherit" />}
+                        />
                     </div>
                 ) : (
                     <div>
