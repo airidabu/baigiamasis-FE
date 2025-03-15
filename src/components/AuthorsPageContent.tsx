@@ -46,7 +46,7 @@ const AuthorsPageContent: React.FC = () => {
             }}
         >
             <ItemsList children={createAuthorElements}></ItemsList>
-            <Divider orientation="vertical" variant="middle"/>
+            <Divider orientation="vertical" variant="middle" flexItem/>
             <AuthorForm/>
         </Box>
     )

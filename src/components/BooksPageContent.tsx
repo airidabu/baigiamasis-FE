@@ -5,6 +5,7 @@ import {Link} from "react-router";
 import BookCard from "./BookCard.tsx";
 import ItemsContainer from "./ItemsContainer.tsx";
 import BooksForm from "./forms/BooksForm.tsx";
+import Container from "@mui/material/Container";
 
 const BooksPageContent: React.FC = () => {
     const {state, fetchBooks, removeBook} = useBooks();
@@ -25,12 +26,12 @@ const BooksPageContent: React.FC = () => {
         </div>
     ))
     return (
-        <div>
+        <Container>
             <ItemsContainer children={createBooksCards}></ItemsContainer>
             <div>
                 <BooksForm/>
             </div>
-        </div>
+        </Container>
     )
 }
 
