@@ -4,7 +4,14 @@ import Box from "@mui/material/Box";
 const HomePage: React.FC = () => {
     return (
         <Container>
-            <h1>Welcome to the Books Page</h1>
+            <Box
+                component="h1"
+                sx={{
+                    m: 0
+                }}
+            >
+                Welcome to the Books Page
+            </Box>
             <Box
                 component="img"
                 src="src/assets/smiley-face.png"
