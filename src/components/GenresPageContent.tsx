@@ -20,7 +20,7 @@ const GenresPageContent: React.FC = () => {
             disableGutters
             secondaryAction={
                 <IconButton onClick={() => removeGenre(genre.id!)} aria-label="delete">
-                    <DeleteForeverIcon/>
+                    <DeleteForeverIcon color="primary"/>
                 </IconButton>
             }
         >
