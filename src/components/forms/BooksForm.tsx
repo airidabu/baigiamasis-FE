@@ -114,7 +114,7 @@ const BooksForm: React.FC = () => {
             </FormControl>
 
             <FormControl sx={{m: 1, minWidth: 200}}>
-                <InputLabel id="genre-label">Author</InputLabel>
+                <InputLabel id="genre-label">Genre</InputLabel>
                 <Select
                     labelId="genre-label"
                     name="genre"
