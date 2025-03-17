@@ -1,6 +1,19 @@
 import {useState} from "react";
 import {useReviews} from "../../contexts/ReviewsContext.tsx";
 import {useParams} from "react-router";
+import Box from "@mui/material/Box";
+import {Button, Rating, TextField} from "@mui/material";
+import {styled} from "@mui/material/styles";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+
+const StyledRating = styled(Rating)(({ theme }) => ({
+    "& .MuiRating-iconFilled": {
+        color: theme.palette.secondary.main,
+    },
+    "& .MuiRating-iconHover": {
+        color: theme.palette.secondary.dark,
+    }
+}));
 
 const ReviewForm: React.FC = () =>{
     const { id } = useParams();
@@ -25,6 +38,17 @@ const ReviewForm: React.FC = () =>{
         })
     }
 
+    const handleRatingChange = (
+        _: React.SyntheticEvent | null,
+        newValue: number | null
+    ) => {
+        setForm((prevForm) => (
+            {
+                ...prevForm,
+                rating: newValue ?? 0
+            }
+        ))
+    }
     const {createReview} = useReviews();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -51,26 +75,47 @@ const ReviewForm: React.FC = () =>{
 
     }
     return (
-        <form onSubmit={handleSubmit}>
-            <div className="form-control">
-                <label htmlFor="nickname">Your Nickname</label>
-                <input onChange={handleTextChange} value={form.nickname} type="text" name="nickname" id="nickname" />
-            </div>
-            <div className="form-control">
-                <label htmlFor="email">Your Email</label>
-                <input onChange={handleTextChange} value={form.email} type="email" name="email" id="email" />
-            </div>
-            <div className="form-control">
-                <label htmlFor="text">Your Review</label>
-                <textarea onChange={handleTextAreaChange} value={form.text} name="text" id="text"></textarea>
-            </div>
-            <div className="form-control">
-                <label htmlFor="rating">Your Rating</label>
-                <input onChange={handleTextChange} value={form.rating} type="range" name="rating" id="rating" max="5" step="0.5"/>
-                <span>{form.rating}</span>
-            </div>
-            <button>Submit</button>
-        </form>
+        <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{display: "flex", flexDirection: "column", gap: 2, maxWidth: "400px"}}
+        >
+            <TextField
+                label="Nickname"
+                variant="outlined"
+                fullWidth
+                name="nickname"
+                value={form.nickname}
+                onChange={handleTextChange}
+            />
+            <TextField
+                label="Email"
+                variant="outlined"
+                fullWidth
+                name="email"
+                value={form.email}
+                onChange={handleTextChange}
+            />
+            <TextField
+                multiline
+                label="Text"
+                variant="outlined"
+                fullWidth
+                name="text"
+                value={form.text}
+                onChange={handleTextAreaChange}
+            />
+            <StyledRating
+                name="rating"
+                value={form.rating}
+                precision={0.5}
+                defaultValue={0}
+                icon={<FavoriteIcon fontSize="inherit" />}
+                emptyIcon={<FavoriteIcon fontSize="inherit" />}
+                onChange={handleRatingChange}
+            />
+            <Button type="submit" variant="contained">Submit</Button>
+        </Box>
     )
 }
 
