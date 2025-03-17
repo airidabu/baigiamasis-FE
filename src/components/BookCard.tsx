@@ -8,14 +8,25 @@ interface BookCardProps {
 
 const BookCard: React.FC<BookCardProps> = ({imageUrl, title}) => {
     return (
-        <Paper sx={{p: 2}} elevation={3}>
+        <Paper
+            sx={{
+                p: 2,
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+            }}
+            elevation={3}>
             <Box
                 component="img"
                 src={imageUrl}
                 alt={title}
-                width="100%"
+                sx={{
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    objectFit: "contain",
+                }}
             />
-            <h2>{title}</h2>
         </Paper>
     )
 }
