@@ -2,23 +2,15 @@ import {useEffect, useState, CSSProperties} from "react";
 import {getBook} from "../api/books.ts";
 import Book from "../types/Book.ts";
 import {BounceLoader} from "react-spinners";
-import styled from "styled-components";
+import {Rating} from "@mui/material";
+import {styled} from "@mui/material/styles";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const override: CSSProperties = {
     display: "block",
     margin: "0 auto",
     borderColor: "#5D001E"
 }
-
-const Wrapper = styled.div`
-    padding: 25px;
-    width: 300px;
-    border-color: black;
-    border-style: solid;
-    p {
-        margin: 0;
-    }
-`
 
 interface ReviewCardProps {
     nickname: string;
@@ -27,6 +19,15 @@ interface ReviewCardProps {
     text: string;
     rating: number;
 }
+
+const StyledRating = styled(Rating)(({ theme }) => ({
+    "& .MuiRating-iconFilled": {
+        color: theme.palette.secondary.main,
+    },
+    "& .MuiRating-iconHover": {
+        color: theme.palette.secondary.dark,
+    }
+}));
 
 const ReviewCard: React.FC<ReviewCardProps> = ({nickname, email, bookId, text, rating}) => {
     const [book, setBook] = useState<Book>();
@@ -38,13 +39,20 @@ const ReviewCard: React.FC<ReviewCardProps> = ({nickname, email, bookId, text, r
     return (
         <>
             {book ? (
-                    <Wrapper>
+                    <div>
                         <div>Review by {nickname} for {book.title}</div>
                         <div>{email}</div>
                         <div>Time posted </div>
                         <p>{text}</p>
                         <p>{rating}</p>
-                    </Wrapper>
+                        <StyledRating
+                            name="customized-rating"
+                            value={rating}
+                            readOnly
+                            icon={<FavoriteIcon fontSize="inherit" />}
+                            emptyIcon={<FavoriteIcon fontSize="inherit" />}
+                        />
+                    </div>
                 ) : (
                     <div>
                        <BounceLoader

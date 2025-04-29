@@ -6,6 +6,8 @@ import {getBookReviews} from "../api/reviews.ts";
 import Review from "../types/Review.ts";
 import {ReviewsProvider} from "../contexts/ReviewsContext.tsx";
 import ReviewsContent from "../components/ReviewsContent.tsx";
+import Container from "@mui/material/Container";
+import {Card, CardContent, CardMedia, Typography} from "@mui/material";
 
 interface bookWithReviews extends Book {
     reviews: Review[];
@@ -24,17 +26,31 @@ const BookPage: React.FC = () => {
     const createBookCard = () => {
         if (book && bookReviews) {
             return (
-                <div>
-                    <h1>{book.title}</h1>
-                    <div>
-                        <img src={book.imageUrl} alt="book cover"/>
-                    </div>
+                <Container maxWidth="lg" sx={{py: 4}}>
+                    <Card sx={{display: "flex", flexDirection: {xs:"column", sm: "row"}, mb: 4, p: 1}}>
+                        <CardMedia
+                            component="img"
+                            height="400"
+                            image={book.imageUrl}
+                            alt={book.title}
+                            sx={{
+                                width: {xs:"100%", sm: 200},
+                                height: {xs: "auto", sm: 300},
+                                objectFit: "cover"
+                            }}
+                        />
+                        <CardContent>
+                            <Typography variant="h4" component="div" gutterBottom>
+                                {book.title}
+                            </Typography>
+                        </CardContent>
+                    </Card>
                     <ReviewsProvider>
                         <ReviewsContent
                             bookId={book.id ?? ""}
                         />
                     </ReviewsProvider>
-                </div>
+                </Container>
             )
         } else {
             return <h1>Book Not Found</h1>

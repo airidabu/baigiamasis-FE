@@ -1,4 +1,5 @@
 import {ReactNode} from "react";
+import {List} from "@mui/material";
 
 type ItemsListProps = {
     children: ReactNode;
@@ -7,9 +8,9 @@ type ItemsListProps = {
 const ItemsList: React.FC<ItemsListProps> = ({children}) => {
     return (
         <>
-            <ul>
+            <List sx={{ width: "100%", maxWidth: 200, bgcolor: "background.paper" }}>
                 {children}
-            </ul>
+            </List>
         </>
     )
 }

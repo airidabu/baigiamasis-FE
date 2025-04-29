@@ -1,5 +1,6 @@
 import {useState} from "react";
 import {useGenres} from "../../contexts/GenresContext.tsx";
+import {Box, TextField, Button} from "@mui/material";
 
 const GenresForm: React.FC = () => {
     const [genreName, setGenreName] = useState("");
@@ -19,11 +20,22 @@ const GenresForm: React.FC = () => {
         setGenreName("");
     }
     return (
-            <form onSubmit={submitHandler}>
-                <label htmlFor="genre-name">Genre Name</label>
-                <input type="text" id="genre-name" name="genre-name" value={genreName} onChange={(e) => setGenreName(e.target.value)} />
-                <button>Submit</button>
-            </form>
+            <Box
+                component="form"
+                onSubmit={submitHandler}
+                sx={{display: "flex", flexDirection: "column", gap: 2, maxWidth: "400px", mx: "auto"}}
+            >
+                <TextField
+                    label="Genre Name"
+                    variant="outlined"
+                    fullWidth
+                    value={genreName}
+                    onChange={(e) => setGenreName(e.target.value)}
+                />
+                <Button type="submit" variant="contained" color="primary">
+                    Submit
+                </Button>
+            </Box>
     )
 }
 

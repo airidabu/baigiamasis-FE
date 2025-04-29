@@ -1,17 +1,12 @@
-import styled from "styled-components";
 import GenresForm from "./forms/GenresForm.tsx";
 import {useGenres} from "../contexts/GenresContext.tsx";
 import {useEffect} from "react";
 import ItemsList from "./ItemsList.tsx";
+import Box from "@mui/material/Box";
+import {Divider, ListItem, ListItemText} from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-const Wrapper = styled.div`
-    display: flex;
-    gap: 30px;
-    justify-content: space-around;
-    width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-`
 const GenresPageContent: React.FC = () => {
     const {state, fetchGenres, removeGenre} = useGenres();
 
@@ -20,18 +15,37 @@ const GenresPageContent: React.FC = () => {
     }, []);
 
     const createGenreElements = state.genres.map((genre) => (
-        <li key={genre.id}>{genre.name}
-            <button onClick={() => removeGenre(genre.id!)}>❌</button>
-        </li>
+        <ListItem
+            key={genre.id}
+            disableGutters
+            secondaryAction={
+                <IconButton onClick={() => removeGenre(genre.id!)} aria-label="delete">
+                    <DeleteForeverIcon color="primary"/>
+                </IconButton>
+            }
+        >
+            <ListItemText primary={genre.name}/>
+        </ListItem>
     ))
 
     return (
-        <Wrapper>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection:{ xs: "column", md:"row"},
+                justifyContent: {md: "space-around", xs: "center"},
+                gap: 2,
+                maxWidth: "800px",
+                margin: "auto",
+                alignItems: "center",
+            }}
+        >
             <ItemsList children={createGenreElements}></ItemsList>
+            <Divider orientation="vertical" variant="middle" flexItem/>
             <div>
                 <GenresForm/>
             </div>
-        </Wrapper>
+        </Box>
     )
 }
 

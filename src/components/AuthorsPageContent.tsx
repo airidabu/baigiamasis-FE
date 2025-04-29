@@ -5,16 +5,11 @@ import Author from "../types/Author.ts";
 import {Link} from "react-router";
 import ItemsList from "./ItemsList.tsx";
 import AuthorForm from "./forms/AuthorForm.tsx";
-import styled from "styled-components";
+import {Divider, ListItem, ListItemText} from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import Box from "@mui/material/Box";
 
-const Wrapper = styled.div`
-    display: flex;
-    gap: 30px;
-    justify-content: space-around;
-    width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-`
 
 const AuthorsPageContent: React.FC = () => {
     const {state, fetchAuthors,removeAuthor } = useAuthors();
@@ -25,19 +20,35 @@ const AuthorsPageContent: React.FC = () => {
 
     const createAuthorElements = state.authors
         .map((author: Author) => (
-            <div key={author.id}>
-                <Link  to={`/authors/${author.id}`}><li>{author.name}</li></Link>
-                <button  onClick={() => removeAuthor(author.id!)}>❌</button>
-            </div>
+            <ListItem
+                key={author.id}
+                disableGutters
+                secondaryAction={
+                <IconButton onClick={() => removeAuthor(author.id!)}>
+                    <DeleteForeverIcon color="primary"/>
+                </IconButton>
+                }
+            >
+                <ListItemText primary={<Link  to={`/authors/${author.id}`}>{author.name}</Link>} />
+            </ListItem>
         ));
 
     return (
-        <Wrapper>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: {xs: "column", md:"row"},
+                justifyContent: {md: "space-around", xs: "center"},
+                gap: 2,
+                maxWidth: "800px",
+                margin: "auto",
+                alignItems: "center",
+            }}
+        >
             <ItemsList children={createAuthorElements}></ItemsList>
-            <div>
-                <AuthorForm/>
-            </div>
-        </Wrapper>
+            <Divider orientation="vertical" variant="middle" flexItem/>
+            <AuthorForm/>
+        </Box>
     )
 }
 

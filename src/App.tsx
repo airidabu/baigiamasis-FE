@@ -1,6 +1,10 @@
 import "./App.css";
 import HomePage from "./pages/HomePage.tsx";
-import {BrowserRouter as Router, Route, Routes} from "react-router";
+import {
+    BrowserRouter as Router,
+    Route,
+    Routes
+} from "react-router";
 import Layout from "./components/Layout.tsx";
 import AuthorsPage from "./pages/AuthorsPage.tsx";
 import AuthorPage from "./pages/AuthorPage.tsx";

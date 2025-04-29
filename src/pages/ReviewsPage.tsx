@@ -3,6 +3,8 @@ import {useEffect, useState} from "react";
 import {getReviews} from "../api/reviews.ts";
 import ItemsContainer from "../components/ItemsContainer.tsx";
 import ReviewCard from "../components/ReviewCard.tsx";
+import {Paper} from "@mui/material";
+import Container from "@mui/material/Container";
 
 const ReviewsPage: React.FC = () => {
     const [reviews, setReviews] = useState<Review[]>([]);
@@ -12,16 +14,17 @@ const ReviewsPage: React.FC = () => {
     },[])
 
     const createReviewElements = reviews.map((review: Review, index) => (
-        <ReviewCard
-        key={index}
-        nickname={review.nickname}
-        email={review.email}
-        bookId={review.bookId}
-        text={review.text}
-        rating={review.rating}
-        />
+        <Paper key={index} sx={{p: 2}} elevation={3}>
+            <ReviewCard
+                nickname={review.nickname}
+                email={review.email}
+                bookId={review.bookId}
+                text={review.text}
+                rating={review.rating}
+            />
+        </Paper>
     ))
-    return <ItemsContainer children={createReviewElements}></ItemsContainer>;
+    return <Container><ItemsContainer children={createReviewElements}></ItemsContainer></Container>;
 }
 
 export default ReviewsPage;

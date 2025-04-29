@@ -1,5 +1,7 @@
 import {useState} from "react";
 import {useAuthors} from "../../contexts/AuthorsContext.tsx";
+import Box from "@mui/material/Box";
+import {Button, TextField} from "@mui/material";
 
 const AuthorForm: React.FC = () => {
     const [form, setForm] = useState({
@@ -47,35 +49,58 @@ const AuthorForm: React.FC = () => {
     }
 
     return (
-        <>
+        <Box sx={{display: "flex", flexDirection: "column", alignItems: "center"}}>
             <h2>Add New Author</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-control">
-                    <label htmlFor="name">Full Name</label>
-                    <input onChange={handleChange} name="name" id="name" type="text" value={form.name}/>
-                </div>
-                <div className="birthday">
-                    <h2>Date of Birth</h2>
-                    <div className="form-control">
-                        <label htmlFor="year">Year</label>
-                        <input onChange={handleChange} type="number" id="year" name="year" value={form.year}/>
-                    </div>
-                    <div className="form-control">
-                        <label htmlFor="month">Month</label>
-                        <input onChange={handleChange} type="number" id="month" name="month" value={form.month}/>
-                    </div>
-                    <div className="form-control">
-                        <label htmlFor="day">Day</label>
-                        <input onChange={handleChange} type="number" id="day" name="day" value={form.day}/>
-                    </div>
-                </div>
-                <div className="form-control">
-                    <label htmlFor="profile-photo">Author's Photo</label>
-                    <input onChange={handleChange} type="text" name="profilePhoto" id="profilePhoto" value={form.profilePhoto}/>
-                </div>
-                <button>Add New Author</button>
-            </form>
-        </>
+            <Box
+                component="form"
+                onSubmit={handleSubmit}
+                sx={{display: "flex", flexDirection: "column", gap: 2, maxWidth: "400px", mx:"auto"}}
+            >
+                <TextField
+                    label="Full Name"
+                    variant="outlined"
+                    fullWidth
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
+                />
+                <TextField
+                    label="Year"
+                    variant="outlined"
+                    fullWidth
+                    name="year"
+                    value={form.year}
+                    onChange={handleChange}
+                />
+                <TextField
+                    label="Month"
+                    variant="outlined"
+                    fullWidth
+                    name="month"
+                    value={form.month}
+                    onChange={handleChange}
+                />
+                <TextField
+                    label="Day"
+                    variant="outlined"
+                    fullWidth
+                    name="day"
+                    value={form.day}
+                    onChange={handleChange}
+                />
+                <TextField
+                    label="Profile Photo Link"
+                    variant="outlined"
+                    fullWidth
+                    name="profilePhoto"
+                    value={form.profilePhoto}
+                    onChange={handleChange}
+                />
+                <Button type="submit" variant="contained" color="primary">
+                    Add New Author
+                </Button>
+            </Box>
+        </Box>
     )
 }
 
