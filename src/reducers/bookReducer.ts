@@ -22,7 +22,7 @@ export const bookReducer = (state: BookState, action: BookAction) => {
         case "ADD_BOOK":
             return {...state, books: [...state.books, action.payload]};
         case "DELETE_BOOK":
-            return {...state, books: state.books.filter(book => book.id !== action.payload) };
+            return {...state, books: state.books.filter(book => book._id !== action.payload) };
         default:
             return state;
     }

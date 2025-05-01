@@ -2,11 +2,11 @@ import {Paper} from "@mui/material";
 import Box from "@mui/material/Box";
 
 interface BookCardProps {
-    imageUrl: string;
-    title: string;
+    imageUrl?: string;
+    name: string;
 }
 
-const BookCard: React.FC<BookCardProps> = ({imageUrl, title}) => {
+const BookCard: React.FC<BookCardProps> = ({imageUrl, name}) => {
     return (
         <Paper
             sx={{
@@ -19,8 +19,8 @@ const BookCard: React.FC<BookCardProps> = ({imageUrl, title}) => {
             elevation={3}>
             <Box
                 component="img"
-                src={imageUrl}
-                alt={title}
+                src={imageUrl || 'https://via.placeholder.com/150?text=No+Image'}
+                alt={name}
                 sx={{
                     maxWidth: "100%",
                     maxHeight: "100%",
