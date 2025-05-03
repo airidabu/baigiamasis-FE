@@ -1,10 +1,7 @@
-import Date from "./Date.ts";
-
 interface Author {
-    id?: string;
+    _id?: string;
     name: string;
-    birthDate: Date;
-    photoUrl: string;
+    surname: string;
 }
 
 export default Author;

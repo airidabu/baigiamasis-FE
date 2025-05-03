@@ -1,5 +1,5 @@
-import {NavLink} from "react-router";
-import {useState} from "react";
+import { NavLink } from "react-router";
+import { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
 import Toolbar from "@mui/material/Toolbar";
@@ -8,32 +8,28 @@ import Menu from "@mui/material/Menu";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import {styled} from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 
 const pages = [
     {
         name: "Home",
-        link:"/"
-    },
-    {
-        name: "Authors",
-        link:"/authors"
+        link: "/"
     },
     {
         name: "Books",
-        link:"/books"
+        link: "/books"
     },
     {
         name: "Genres",
-        link:"/genres"
+        link: "/genres"
     },
     {
         name: "Reviews",
-        link:"/reviews"
+        link: "/reviews"
     }
 ];
 
-const StyledNavLink = styled(NavLink)(({theme}) => ({
+const StyledNavLink = styled(NavLink)(({ theme }) => ({
     textDecoration: "none",
     color: theme.palette.primary.dark,
     padding: theme.spacing(1),
@@ -64,7 +60,7 @@ const PageNavigation: React.FC = () => {
             <Container maxWidth="xl">
                 <nav>
                     <Toolbar>
-                        <Box sx={{flexGrow: 1, display: {xs: "flex", md: "none"}}}>
+                        <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
                             <IconButton
                                 size="large"
                                 aria-label="open menu"
@@ -79,24 +75,24 @@ const PageNavigation: React.FC = () => {
                                 id="menu-apbar"
                                 anchorEl={anchorElNav}
                                 anchorOrigin={{
-                                    vertical:"bottom",
-                                    horizontal:"left",
+                                    vertical: "bottom",
+                                    horizontal: "left",
                                 }}
                                 keepMounted
                                 transformOrigin={{
-                                    vertical:"top",
-                                    horizontal:"left",
+                                    vertical: "top",
+                                    horizontal: "left",
                                 }}
                                 open={Boolean(anchorElNav)}
                                 onClose={handleCloseNavMenu}
                                 sx={{ display: { xs: 'block', md: 'none' } }}
                             >
-                            {createLinkElements}
+                                {createLinkElements}
                             </Menu>
                         </Box>
-                            <Box sx={{flexGrow: 1, display: {xs: "none", md:"flex"}}}>
+                        <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
                             {createLinkElements}
-                            </Box>
+                        </Box>
                     </Toolbar>
                 </nav>
             </Container>

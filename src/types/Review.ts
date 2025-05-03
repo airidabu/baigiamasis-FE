@@ -1,10 +1,15 @@
+import Book from "./Book";
+import User from "./User";
+
 interface Review {
-    id?: string;
-    nickname: string;
-    email: string;
-    bookId: string;
-    text: string;
+    _id: string;
+    user: User;
+    book: Book;
     rating: number;
+    comment: string;
+    createdAt?: string;
+    updatedAt?: string;
+    __v?: number;
 }
 
 export default Review;

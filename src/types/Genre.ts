@@ -1,6 +1,7 @@
 interface Genre {
-    id?: string;
+    _id: string;
     name: string;
+    __v: number;
 }
 
 export default Genre;
