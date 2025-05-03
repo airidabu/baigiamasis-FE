@@ -71,6 +71,13 @@ const RegistrationForm: React.FC = () => {
         setShowConfirmPassword(!showConfirmPassword);
     };
 
+    const validateEmail = (email: string) => {
+        return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+    };
+
+    const validatePassword = (password: string) => {
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-={}:'"\\|,.<>/?]).{6,}$/.test(password);
+    }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -78,8 +85,8 @@ const RegistrationForm: React.FC = () => {
         const newErrors = {
             name: formData.name.trim() === "",
             surname: formData.surname.trim() === "",
-            email: !formData.email.includes('@') || formData.email.trim() === "",
-            password: formData.password.length < 6,
+            email: !validateEmail(formData.email) || formData.email.trim() === "",
+            password: !validatePassword(formData.password) || formData.password.trim() === "",
             confirmPassword: formData.confirmPassword.trim() === "",
             passwordMatch: formData.password !== formData.confirmPassword
         };
@@ -169,7 +176,7 @@ const RegistrationForm: React.FC = () => {
                             fullWidth
                             required
                             error={errors.password}
-                            helperText={errors.password && "Password must be at least 6 characters"}
+                            helperText={errors.password && "Password must be at least 6 characters with uppercase, lowercase, number, and special character"}
                             margin="normal"
                             slotProps={{
                                 input: {
@@ -198,7 +205,7 @@ const RegistrationForm: React.FC = () => {
                             fullWidth
                             required
                             error={errors.confirmPassword || errors.passwordMatch}
-                            helperText={errors.confirmPassword && "Passwords must match"}
+                            helperText={(errors.confirmPassword && "Confirm password is required") || (errors.passwordMatch && "Passwords don't match")}
                             margin="normal"
                             slotProps={{
                                 input: {
