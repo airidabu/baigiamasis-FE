@@ -6,9 +6,14 @@ import {
     Box,
     InputAdornment,
     IconButton,
-    Paper
+    Paper,
+    Alert,
+    Snackbar
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const LoginForm: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -22,6 +27,9 @@ const LoginForm: React.FC = () => {
     });
 
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [apiError, setApiError] = useState<string | null>(null);
+    const [loginSuccess, setLoginSuccess] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -46,7 +54,7 @@ const LoginForm: React.FC = () => {
         return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const newErrors = {
@@ -57,9 +65,42 @@ const LoginForm: React.FC = () => {
         setErrors(newErrors);
 
         if (!Object.values(newErrors).some(error => error)) {
-            console.log("Login form submitted:", formData);
-            // TODO: Handle login submission - send data to server
+            try {
+                setLoading(true);
+                setApiError(null);
+
+                const res = await axios.post(`${API_URL}/users/login`, {
+                    email: formData.email,
+                    password: formData.password
+                });
+
+                console.log("Login response:", res.data);
+
+                if (res.data.token) {
+                    localStorage.setItem("token", res.data.token);
+                }
+                setLoginSuccess(true);
+
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    if (error.response) {
+                        setApiError(error.response.data.message || 'Login failed. Please check your credentials.');
+                    } else {
+                        setApiError('Network error. Please try again later.');
+                    }
+                } else {
+                    setApiError('An unexpected error occurred');
+                }
+                console.error("Login error:", error);
+            } finally {
+                setLoading(false);
+            }
         }
+    };
+
+    const handleCloseSnackbar = () => {
+        setApiError(null);
+        setLoginSuccess(false);
     };
 
     return (
@@ -67,6 +108,12 @@ const LoginForm: React.FC = () => {
             <Typography variant="h5" component="h2" gutterBottom align="center">
                 Login
             </Typography>
+            {apiError && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {apiError}
+                </Alert>
+            )
+            }
             <Box component="form" onSubmit={handleSubmit} noValidate>
                 <TextField
                     name="email"
@@ -113,11 +160,18 @@ const LoginForm: React.FC = () => {
                     color="primary"
                     fullWidth
                     sx={{ mt: 2 }}
+                    disabled={loading}
                 >
-                    Login
+                    {loading ? "Logging in..." : "Login"}
                 </Button>
             </Box>
-        </Paper>
+            <Snackbar
+                open={loginSuccess}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                message="Login successful!"
+            />
+        </Paper >
     );
 }
 
