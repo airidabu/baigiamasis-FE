@@ -5,17 +5,12 @@ import {
     Grid,
     Typography,
     Box,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
     InputAdornment,
     IconButton,
     Paper,
     Alert,
     Snackbar
 } from "@mui/material";
-import { SelectChangeEvent } from "@mui/material/Select";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
 
@@ -28,9 +23,7 @@ const RegistrationForm: React.FC = () => {
         email: "",
         password: "",
         confirmPassword: "",
-        birthYear: "",
-        birthMonth: "",
-        birthDay: ""
+        birthDate: ""
     });
 
     const [errors, setErrors] = useState({
@@ -62,14 +55,6 @@ const RegistrationForm: React.FC = () => {
                 [name]: false
             });
         }
-    };
-
-    const handleSelectChange = (e: SelectChangeEvent) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name as string]: value as string
-        });
     };
 
     const handleClickShowPassword = () => {
@@ -107,17 +92,13 @@ const RegistrationForm: React.FC = () => {
             try {
                 setLoading(true);
                 setApiError(null);
-                let birthDate = null;
-                if (formData.birthYear && formData.birthMonth && formData.birthDay) {
-                    birthDate = `${formData.birthYear}-${formData.birthMonth.padStart(2, "0")}-${formData.birthDay}`;
-                }
 
                 const res = await axios.post(`${API_URL}/users/register`, {
                     name: formData.name,
                     surname: formData.surname,
                     email: formData.email,
                     password: formData.password,
-                    ...(birthDate && { birthDate })
+                    ...(formData.birthDate && { birthDate: formData.birthDate })
                 });
 
                 console.log("Registration response:", res.data);
@@ -144,26 +125,6 @@ const RegistrationForm: React.FC = () => {
         setApiError(null);
         setRegistrationSuccess(false);
     };
-
-    const days = Array.from({ length: 31 }, (_, i) => i + 1);
-
-    const months = [
-        { value: "1", label: "January" },
-        { value: "2", label: "February" },
-        { value: "3", label: "March" },
-        { value: "4", label: "April" },
-        { value: "5", label: "May" },
-        { value: "6", label: "June" },
-        { value: "7", label: "July" },
-        { value: "8", label: "August" },
-        { value: "9", label: "September" },
-        { value: "10", label: "October" },
-        { value: "11", label: "November" },
-        { value: "12", label: "December" }
-    ];
-
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
     return (
         <Paper elevation={3} sx={{ p: 4, maxWidth: 500, mx: "auto", my: 2 }}>
@@ -276,72 +237,17 @@ const RegistrationForm: React.FC = () => {
                         />
                     </Grid>
                     <Grid size={{ xs: 12 }}>
-                        <Typography variant="subtitle2" gutterBottom sx={{ mt: 1 }}>
-                            Birthday (optional)
-                        </Typography>
-                    </Grid>
-                    <Grid size={{ xs: 4 }}>
-                        <FormControl fullWidth>
-                            <InputLabel id="day-label">Day</InputLabel>
-                            <Select
-                                labelId="day-label"
-                                name="birthDay"
-                                value={formData.birthDay}
-                                label="Day"
-                                onChange={handleSelectChange}
-                            >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                {days.map((day) => (
-                                    <MenuItem key={day} value={day.toString()}>
-                                        {day}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid size={{ xs: 4 }}>
-                        <FormControl fullWidth>
-                            <InputLabel id="month-label">Month</InputLabel>
-                            <Select
-                                labelId="month-label"
-                                name="birthMonth"
-                                value={formData.birthMonth}
-                                label="Month"
-                                onChange={handleSelectChange}
-                            >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                {months.map((month) => (
-                                    <MenuItem key={month.value} value={month.value}>
-                                        {month.label}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid size={{ xs: 4 }}>
-                        <FormControl fullWidth>
-                            <InputLabel id="year-label">Year</InputLabel>
-                            <Select
-                                labelId="year-label"
-                                name="birthYear"
-                                value={formData.birthYear}
-                                label="Year"
-                                onChange={handleSelectChange}
-                            >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                {years.map((year) => (
-                                    <MenuItem key={year} value={year.toString()}>
-                                        {year}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                        <TextField
+                            label="Birth Date (optional)"
+                            variant="outlined"
+                            fullWidth
+                            type="date"
+                            name="birthDate"
+                            value={formData.birthDate}
+                            onChange={handleChange}
+                            margin="normal"
+                            slotProps={{ inputLabel: { shrink: true } }}
+                        />
                     </Grid>
                     <Grid size={{ xs: 12 }}>
                         <Button

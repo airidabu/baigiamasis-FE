@@ -1,53 +1,63 @@
-import {useBooks} from "../contexts/BooksContext.tsx";
-import {useEffect} from "react";
+import { useBooks } from "../contexts/BooksContext.tsx";
+import { useEffect, useState } from "react";
 import Book from "../types/Book.ts";
-import {Link} from "react-router";
+import { Link } from "react-router";
 import BookCard from "./BookCard.tsx";
 import ItemsContainer from "./ItemsContainer.tsx";
 import BooksForm from "./forms/BooksForm.tsx";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
-import {Button} from "@mui/material";
-
+import { Button, Collapse } from "@mui/material";
+import { useAuth } from "../contexts/AuthContext.tsx";
 
 const BooksPageContent: React.FC = () => {
-    const {state, fetchBooks, removeBook} = useBooks();
+    const { state, fetchBooks } = useBooks();
+    const [isFormOpen, setFormOpen] = useState(false);
+    const { userRole, isAuthenticated } = useAuth();
 
     useEffect(() => {
         fetchBooks();
-    }, [])
+    });
 
     const createBooksCards = state.books.map((book: Book) => (
         <Box
-            key={book.id}
+            key={book._id}
             sx={{
                 width: 240,
                 height: 340,
                 margin: 1
             }}
         >
-            <Link to={`/books/${book.id}`} style={{
+            <Link to={`/books/${book._id}`} style={{
                 textDecoration: "none",
-                display:"block",
+                display: "block",
                 height: "calc(100% - 40px)"
             }}>
                 <BookCard
-                    title={book.title}
-                    imageUrl={book.imageUrl}
+                    title={book.name}
+                    imageUrl={book.pictureUrl ? book.pictureUrl : "https://static.vecteezy.com/system/resources/thumbnails/020/484/423/small_2x/hand-drawn-open-book-vector.jpg"}
                 />
             </Link>
-            <Box sx={{display: "flex", justifyContent: "flex-end", mt: 1}}>
-                <Button variant="outlined" onClick={() => removeBook(book.id!)}>Remove Book❌</Button>
-            </Box>
         </Box>
     ))
     return (
         <Container>
-            <Box sx={{display: "flex", justifyContent: "space-around"}}>
+            <Box sx={{ display: "flex", justifyContent: "space-around" }}>
                 <ItemsContainer children={createBooksCards}></ItemsContainer>
-                <div>
-                    <BooksForm/>
-                </div>
+                {isAuthenticated && (userRole === "admin" || userRole === "author") && (
+                    <div>
+                        <Button
+                            variant="contained"
+                            onClick={() => setFormOpen((prev) => !prev)}
+                            sx={{ mb: 2 }}
+                        >
+                            {isFormOpen ? "Close Form" : "Add New Book"}
+                        </Button>
+                        <Collapse in={isFormOpen}>
+                            <BooksForm />
+                        </Collapse>
+                    </div>
+                )}
             </Box>
         </Container>
     )

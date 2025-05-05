@@ -8,38 +8,43 @@ import { Button, FormControl, InputLabel, Select, SelectChangeEvent, TextField }
 import MenuItem from "@mui/material/MenuItem";
 
 const BooksForm: React.FC = () => {
-    const [form, setForm] = useState({
-        title: "",
-        image: "",
-        author: "",
-        genre: "",
-    })
-
     const [genres, setGenres] = useState<Genre[]>([]);
+    const [form, setForm] = useState({
+        name: "",
+        description: "",
+        pictureUrl: "",
+        releaseDate: "",
+        publisher: "",
+        genres: "",
+        pageNumber: "",
+    });
 
     useEffect(() => {
-        getGenres()
-            .then(data => setGenres(data))
-            .catch(err => console.log(err));
-    }, [])
+        const fetchGenres = async () => {
+            try {
+                const genresData = await getGenres();
+                setGenres(genresData);
+            } catch (error) {
+                console.error("Failed to fetch genres:", error);
+            }
+        };
 
-    const createGenreElements = genres.map((genre: Genre) => (
-        <MenuItem key={genre.id} value={genre.id}>{genre.name}</MenuItem>
-    ))
+        fetchGenres();
+    }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({
             ...form,
             [e.target.name]: e.target.value
-        })
-    }
+        });
+    };
 
     const handleSelectChange = (e: SelectChangeEvent) => {
         setForm({
             ...form,
             [e.target.name]: e.target.value
-        })
-    }
+        });
+    };
 
     const { createBook } = useBooks();
 
@@ -47,24 +52,29 @@ const BooksForm: React.FC = () => {
         e.preventDefault();
 
         const newBook = {
-            title: form.title,
-            imageUrl: form.image,
-            genreId: form.genre,
-            authorId: form.author,
-        }
+            name: form.name,
+            description: form.description,
+            pictureUrl: form.pictureUrl,
+            releaseDate: form.releaseDate,
+            publisher: form.publisher,
+            genres: form.genres,
+            pageNumber: parseInt(form.pageNumber),
+        };
 
         createBook(newBook).then(() => {
-            console.log("Successfully added new book", newBook)
-        })
+            console.log("Successfully added new book", newBook);
+        });
 
         setForm({
-            ...form,
-            title: "",
-            image: "",
-            genre: "",
-            author: ""
-        })
-    }
+            name: "",
+            description: "",
+            pictureUrl: "",
+            releaseDate: "",
+            publisher: "",
+            genres: "",
+            pageNumber: "",
+        });
+    };
 
     return (
         <Box
@@ -73,36 +83,92 @@ const BooksForm: React.FC = () => {
             sx={{ display: "flex", flexDirection: "column", gap: 2, maxWidth: "400px", mx: "auto" }}
         >
             <TextField
-                label="Title"
+                label="Name"
                 variant="outlined"
                 fullWidth
-                name="title"
-                value={form.title}
+                required
+                name="name"
+                value={form.name}
                 onChange={handleInputChange}
             />
             <TextField
-                label="Image URL"
+                label="Description"
                 variant="outlined"
                 fullWidth
-                name="image"
-                value={form.image}
+                multiline
+                rows={3}
+                name="description"
+                value={form.description}
                 onChange={handleInputChange}
             />
-            <FormControl sx={{ m: 1, minWidth: 200 }}>
+            <TextField
+                label="Picture URL"
+                variant="outlined"
+                fullWidth
+                name="pictureUrl"
+                value={form.pictureUrl}
+                onChange={handleInputChange}
+            />
+            <TextField
+                label="Release Date"
+                variant="outlined"
+                fullWidth
+                required
+                type="date"
+                name="releaseDate"
+                value={form.releaseDate}
+                onChange={handleInputChange}
+                slotProps={{ inputLabel: { shrink: true } }}
+            />
+            <TextField
+                label="Publisher ID"
+                variant="outlined"
+                fullWidth
+                required
+                name="publisher"
+                value={form.publisher}
+                onChange={handleInputChange}
+                helperText="Enter publisher ID (will be select dropdown later)"
+            />
+            <TextField
+                label="Genres ID"
+                variant="outlined"
+                fullWidth
+                required
+                name="genres"
+                value={form.genres}
+                onChange={handleInputChange}
+                helperText="Enter genre ID (will be multi-select later)"
+            />
+            <TextField
+                label="Page Number"
+                variant="outlined"
+                fullWidth
+                required
+                type="number"
+                name="pageNumber"
+                value={form.pageNumber}
+                onChange={handleInputChange}
+            />
+            <FormControl sx={{ minWidth: 200 }}>
                 <InputLabel id="genre-label">Genre</InputLabel>
                 <Select
                     labelId="genre-label"
-                    name="genre"
-                    value={form.genre}
+                    name="genres"
+                    value={form.genres}
                     label="Genre"
                     onChange={handleSelectChange}
                 >
-                    {createGenreElements}
+                    {genres.map(genre => (
+                        <MenuItem key={genre._id} value={genre._id}>
+                            {genre.name}
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>
             <Button variant="contained" type="submit">Add New Book</Button>
         </Box>
-    )
-}
+    );
+};
 
 export default BooksForm;

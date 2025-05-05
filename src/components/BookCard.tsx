@@ -1,4 +1,4 @@
-import {Paper} from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 
 interface BookCardProps {
@@ -6,7 +6,7 @@ interface BookCardProps {
     title: string;
 }
 
-const BookCard: React.FC<BookCardProps> = ({imageUrl, title}) => {
+const BookCard: React.FC<BookCardProps> = ({ imageUrl, title }) => {
     return (
         <Paper
             sx={{
@@ -27,6 +27,18 @@ const BookCard: React.FC<BookCardProps> = ({imageUrl, title}) => {
                     objectFit: "contain",
                 }}
             />
+            <Typography
+                variant="h6"
+                sx={{
+                    mt: 2,
+                    textAlign: "center",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap"
+                }}
+            >
+                {title}
+            </Typography>
         </Paper>
     )
 }
