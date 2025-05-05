@@ -13,6 +13,8 @@ import ReviewsPage from "./pages/ReviewsPage.tsx";
 import LoginForm from "./components/forms/LoginForm.tsx";
 import RegistrationForm from "./components/forms/RegistrationForm.tsx";
 import UnauthorizedPage from "./pages/UnauthorizedPage.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import EditBookPage from "./pages/EditBookPage.tsx";
 
 const App: React.FC = () => {
 
@@ -28,6 +30,9 @@ const App: React.FC = () => {
           <Route path="/books/:id" element={<BookPage />} />
           <Route path="/reviews" element={<ReviewsPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route element={<ProtectedRoute allowedRoles={["admin", "author"]} />}>
+            <Route path="/books/edit/:id" element={<EditBookPage />} />
+          </Route>
         </Route>
       </Routes>
     </Router>

@@ -4,7 +4,7 @@ import Publisher from "./Publisher";
 import BookStatus from "./BookStatus";
 
 interface Book {
-    _id: string;
+    _id?: string;
     name: string;
     author?: Author;
     publisher?: Publisher;
