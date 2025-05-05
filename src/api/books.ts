@@ -52,3 +52,14 @@ export const deleteBook = async (id: string): Promise<void> => {
         console.error("Error deleting book", error);
     }
 }
+
+export const updateBook = async (id: string, updatedBook: Partial<Book>): Promise<Book | undefined> => {
+    try {
+        const { data } = await axios.put(`${API_URL}/books/${id}`, updatedBook);
+        console.log(data, "updated successfully");
+        return data;
+    } catch (error) {
+        console.error("Error updating book", error);
+        return undefined;
+    }
+};
