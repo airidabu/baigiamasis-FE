@@ -9,6 +9,8 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/material/styles";
+import { Switch } from "@mui/material";
+import { useThemeContext } from "../contexts/ThemeContext";
 
 const pages = [
     {
@@ -40,6 +42,7 @@ const StyledNavLink = styled(NavLink)(({ theme }) => ({
 
 const PageNavigation: React.FC = () => {
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+    const { themeMode, toggleTheme } = useThemeContext();
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -92,6 +95,12 @@ const PageNavigation: React.FC = () => {
                         </Box>
                         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
                             {createLinkElements}
+                        </Box>
+                        <Box>
+                            <Switch
+                                checked={themeMode === "dark"}
+                                onChange={toggleTheme}
+                            />
                         </Box>
                     </Toolbar>
                 </nav>
