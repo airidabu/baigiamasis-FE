@@ -1,55 +1,78 @@
-import {useParams} from "react-router";
-import {useEffect, useState} from "react";
+import { useParams, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
 import Book from "../types/Book.ts";
-import {getBook} from "../api/books.ts";
-import {getBookReviews} from "../api/reviews.ts";
-import Review from "../types/Review.ts";
-import {ReviewsProvider} from "../contexts/ReviewsContext.tsx";
-import ReviewsContent from "../components/ReviewsContent.tsx";
+import { getBook, deleteBook } from "../api/books.ts";
 import Container from "@mui/material/Container";
-import {Card, CardContent, CardMedia, Typography} from "@mui/material";
-
-interface bookWithReviews extends Book {
-    reviews: Review[];
-}
+import { Card, CardContent, CardMedia, Typography, Box, Button } from "@mui/material";
+import { useAuth } from "../contexts/AuthContext.tsx";
 
 const BookPage: React.FC = () => {
-    const {id} = useParams<{id: string}>();
+    const { id } = useParams<{ id: string }>();
     const [book, setBook] = useState<Book | undefined>();
-    const [bookReviews, setBookReviews] = useState<bookWithReviews | undefined>();
+    const { userRole, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         getBook(id!).then(fetchedBook => setBook(fetchedBook));
-        getBookReviews(id!).then(fetchedReviews => setBookReviews(fetchedReviews));
-    },[id])
+    }, [id])
+
+    const handleEdit = () => {
+        navigate(`/books/edit/${id}`);
+    }
+
+    const handleDelete = async () => {
+        if (window.confirm("Are you sure you want to delete this book?")) {
+            await deleteBook(id!);
+            navigate("/books");
+        }
+    };
 
     const createBookCard = () => {
-        if (book && bookReviews) {
+        if (book) {
             return (
-                <Container maxWidth="lg" sx={{py: 4}}>
-                    <Card sx={{display: "flex", flexDirection: {xs:"column", sm: "row"}, mb: 4, p: 1}}>
+                <Container maxWidth="lg" sx={{ py: 4 }}>
+                    <Card sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, mb: 4, p: 1 }}>
                         <CardMedia
                             component="img"
-                            height="400"
-                            image={book.imageUrl}
-                            alt={book.title}
+                            height="300"
+                            image={book.pictureUrl ? book.pictureUrl : "https://static.vecteezy.com/system/resources/thumbnails/020/484/423/small_2x/hand-drawn-open-book-vector.jpg"}
+                            alt={book.name}
                             sx={{
-                                width: {xs:"100%", sm: 200},
-                                height: {xs: "auto", sm: 300},
-                                objectFit: "cover"
+                                width: { xs: "100%", sm: 200 },
+                                height: { xs: "auto", sm: 300 },
+                                objectFit: "cover",
+                                border: "2px solid",
+                                borderColor: "primary.main",
+                                borderRadius: 1,
                             }}
                         />
                         <CardContent>
-                            <Typography variant="h4" component="div" gutterBottom>
-                                {book.title}
+                            <Typography variant="h3" component="div" gutterBottom>
+                                {book.name}
                             </Typography>
+                            <Typography variant="h4">
+                                {book.author ? `${book.author.name} ${book.author.surname}` : "Unknown Author"}
+                            </Typography>
+                            <Typography>
+                                {book.publisher?.name || "Unknown Publisher"}
+                            </Typography>
+                            {book.description?.trim() && (
+                                <Typography>
+                                    {book.description}
+                                </Typography>
+                            )}
+                            {isAuthenticated && (userRole === "admin" || userRole === "author") && (
+                                <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
+                                    <Button variant="contained" onClick={handleEdit}>
+                                        Edit
+                                    </Button>
+                                    <Button variant="contained" color="error" onClick={handleDelete}>
+                                        Delete
+                                    </Button>
+                                </Box>
+                            )}
                         </CardContent>
                     </Card>
-                    <ReviewsProvider>
-                        <ReviewsContent
-                            bookId={book.id ?? ""}
-                        />
-                    </ReviewsProvider>
                 </Container>
             )
         } else {
