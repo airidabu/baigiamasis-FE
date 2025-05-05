@@ -8,10 +8,12 @@ import BooksForm from "./forms/BooksForm.tsx";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import { Button, Collapse } from "@mui/material";
+import { useAuth } from "../contexts/AuthContext.tsx";
 
 const BooksPageContent: React.FC = () => {
     const { state, fetchBooks } = useBooks();
     const [isFormOpen, setFormOpen] = useState(false);
+    const { userRole, isAuthenticated } = useAuth();
 
     useEffect(() => {
         fetchBooks();
@@ -42,18 +44,20 @@ const BooksPageContent: React.FC = () => {
         <Container>
             <Box sx={{ display: "flex", justifyContent: "space-around" }}>
                 <ItemsContainer children={createBooksCards}></ItemsContainer>
-                <div>
-                    <Button
-                        variant="contained"
-                        onClick={() => setFormOpen((prev) => !prev)}
-                        sx={{ mb: 2 }}
-                    >
-                        {isFormOpen ? "Close Form" : "Add New Book"}
-                    </Button>
-                    <Collapse in={isFormOpen}>
-                        <BooksForm />
-                    </Collapse>
-                </div>
+                {isAuthenticated && (userRole === "admin" || userRole === "author") && (
+                    <div>
+                        <Button
+                            variant="contained"
+                            onClick={() => setFormOpen((prev) => !prev)}
+                            sx={{ mb: 2 }}
+                        >
+                            {isFormOpen ? "Close Form" : "Add New Book"}
+                        </Button>
+                        <Collapse in={isFormOpen}>
+                            <BooksForm />
+                        </Collapse>
+                    </div>
+                )}
             </Box>
         </Container>
     )
