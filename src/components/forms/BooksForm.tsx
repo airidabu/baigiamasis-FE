@@ -57,7 +57,7 @@ const BooksForm: React.FC = () => {
             pictureUrl: form.pictureUrl,
             releaseDate: form.releaseDate,
             publisher: form.publisher,
-            genres: form.genres, // For now as string, will update later to array
+            genres: form.genres,
             pageNumber: parseInt(form.pageNumber),
         };
 
@@ -118,6 +118,7 @@ const BooksForm: React.FC = () => {
                 name="releaseDate"
                 value={form.releaseDate}
                 onChange={handleInputChange}
+                slotProps={{ inputLabel: { shrink: true } }}
             />
             <TextField
                 label="Publisher ID"
