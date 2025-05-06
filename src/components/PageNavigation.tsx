@@ -9,7 +9,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/material/styles";
-import { Switch } from "@mui/material";
+import { FormControlLabel, Switch } from "@mui/material";
 import { useThemeContext } from "../contexts/ThemeContext";
 
 const pages = [
@@ -53,8 +53,12 @@ const PageNavigation: React.FC = () => {
     }
 
     const createLinkElements = pages.map((page) => (
-        <MenuItem key={page.link}>
-            <StyledNavLink to={page.link}>{page.name}</StyledNavLink>
+        <MenuItem
+            component={StyledNavLink}
+            to={page.link}
+            key={page.link}
+        >
+            {page.name}
         </MenuItem>
     ))
 
@@ -97,9 +101,20 @@ const PageNavigation: React.FC = () => {
                             {createLinkElements}
                         </Box>
                         <Box>
-                            <Switch
-                                checked={themeMode === "dark"}
-                                onChange={toggleTheme}
+                            <FormControlLabel
+                                control={<Switch
+                                    checked={themeMode === "dark"}
+                                    onChange={toggleTheme}
+                                    aria-label="Change theme"
+                                />}
+                                label="Change Theme"
+                                labelPlacement="bottom"
+                                sx={{
+                                    alignItems: "center",
+                                    "& .MuiTypography-root": {
+                                        fontWeight: 500
+                                    }
+                                }}
                             />
                         </Box>
                     </Toolbar>
