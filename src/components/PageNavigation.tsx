@@ -53,8 +53,12 @@ const PageNavigation: React.FC = () => {
     }
 
     const createLinkElements = pages.map((page) => (
-        <MenuItem key={page.link}>
-            <StyledNavLink to={page.link}>{page.name}</StyledNavLink>
+        <MenuItem
+            component={StyledNavLink}
+            to={page.link}
+            key={page.link}
+        >
+            {page.name}
         </MenuItem>
     ))
 
