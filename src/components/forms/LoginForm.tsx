@@ -86,7 +86,6 @@ const LoginForm: React.FC = () => {
                     login(res.data.token);
                     setLoginSuccess(true);
                 }
-                setLoginSuccess(true);
 
                 setTimeout(() => {
                     navigate("/");
