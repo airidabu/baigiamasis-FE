@@ -105,6 +105,7 @@ const PageNavigation: React.FC = () => {
                                 control={<Switch
                                     checked={themeMode === "dark"}
                                     onChange={toggleTheme}
+                                    aria-label="Change theme"
                                 />}
                                 label="Change Theme"
                                 labelPlacement="bottom"
