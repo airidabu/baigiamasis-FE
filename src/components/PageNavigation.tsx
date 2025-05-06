@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
@@ -9,8 +9,9 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/material/styles";
-import { FormControlLabel, Switch } from "@mui/material";
+import { Button, FormControlLabel, Switch } from "@mui/material";
 import { useThemeContext } from "../contexts/ThemeContext";
+import { useAuth } from "../contexts/AuthContext";
 
 const pages = [
     {
@@ -43,6 +44,8 @@ const StyledNavLink = styled(NavLink)(({ theme }) => ({
 const PageNavigation: React.FC = () => {
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const { themeMode, toggleTheme } = useThemeContext();
+    const { isAuthenticated, logout, user } = useAuth();
+    const navigate = useNavigate();
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -51,6 +54,12 @@ const PageNavigation: React.FC = () => {
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
     }
+
+    const handleLogout = () => {
+        logout();
+        navigate("/");
+    }
+
 
     const createLinkElements = pages.map((page) => (
         <MenuItem
@@ -99,6 +108,26 @@ const PageNavigation: React.FC = () => {
                         </Box>
                         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
                             {createLinkElements}
+                        </Box>
+                        <Box>
+                            {isAuthenticated ? (
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={handleLogout}
+                                >
+                                    Logout {user?.name ? `${user.name}` : ""}
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    component={StyledNavLink}
+                                    to="/login"
+                                >
+                                    Login / Register
+                                </Button>
+                            )}
                         </Box>
                         <Box>
                             <FormControlLabel

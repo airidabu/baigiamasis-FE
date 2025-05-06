@@ -12,10 +12,15 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from 'axios';
+import { useNavigate } from 'react-router';
+import { useAuth } from '../../contexts/AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const LoginForm: React.FC = () => {
+    const navigate = useNavigate();
+    const { login } = useAuth();
+
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -78,8 +83,13 @@ const LoginForm: React.FC = () => {
 
                 if (res.data.token) {
                     localStorage.setItem("token", res.data.token);
+                    login(res.data.token);
+                    setLoginSuccess(true);
                 }
-                setLoginSuccess(true);
+
+                setTimeout(() => {
+                    navigate("/");
+                }, 500);
 
             } catch (error) {
                 if (axios.isAxiosError(error)) {
