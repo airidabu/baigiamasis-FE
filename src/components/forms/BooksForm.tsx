@@ -4,8 +4,7 @@ import Genre from "../../types/Genre.ts";
 import { getGenres } from "../../api/genres.ts";
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { Button, FormControl, InputLabel, Select, SelectChangeEvent, TextField } from "@mui/material";
-import MenuItem from "@mui/material/MenuItem";
+import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Paper, TextField } from "@mui/material";
 
 const BooksForm: React.FC = () => {
     const [genres, setGenres] = useState<Genre[]>([]);
@@ -15,7 +14,7 @@ const BooksForm: React.FC = () => {
         pictureUrl: "",
         releaseDate: "",
         publisher: "",
-        genres: "",
+        genres: [] as string[],
         pageNumber: "",
     });
 
@@ -39,12 +38,21 @@ const BooksForm: React.FC = () => {
         });
     };
 
-    const handleSelectChange = (e: SelectChangeEvent) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value
-        });
-    };
+    const handleGenreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value, checked } = e.target;
+        if (checked) {
+            setForm({
+                ...form,
+                genres: [...form.genres, value]
+            });
+        } else {
+            setForm({
+                ...form,
+                genres: form.genres.filter(genreId => genreId !== value)
+            })
+        }
+
+    }
 
     const { createBook } = useBooks();
 
@@ -71,7 +79,7 @@ const BooksForm: React.FC = () => {
             pictureUrl: "",
             releaseDate: "",
             publisher: "",
-            genres: "",
+            genres: [],
             pageNumber: "",
         });
     };
@@ -131,16 +139,6 @@ const BooksForm: React.FC = () => {
                 helperText="Enter publisher ID (will be select dropdown later)"
             />
             <TextField
-                label="Genres ID"
-                variant="outlined"
-                fullWidth
-                required
-                name="genres"
-                value={form.genres}
-                onChange={handleInputChange}
-                helperText="Enter genre ID (will be multi-select later)"
-            />
-            <TextField
                 label="Page Number"
                 variant="outlined"
                 fullWidth
@@ -150,21 +148,33 @@ const BooksForm: React.FC = () => {
                 value={form.pageNumber}
                 onChange={handleInputChange}
             />
-            <FormControl sx={{ minWidth: 200 }}>
-                <InputLabel id="genre-label">Genre</InputLabel>
-                <Select
-                    labelId="genre-label"
-                    name="genres"
-                    value={form.genres}
-                    label="Genre"
-                    onChange={handleSelectChange}
+            <FormControl sx={{ minWidth: 200 }} component="fieldset" variant="standard" required>
+                <FormLabel component="legend">Genres</FormLabel>
+                <Paper
+                    variant="outlined"
+                    sx={{
+                        p: 2,
+                        maxHeight: "200px",
+                        overflow: "auto"
+                    }}
                 >
-                    {genres.map(genre => (
-                        <MenuItem key={genre._id} value={genre._id}>
-                            {genre.name}
-                        </MenuItem>
-                    ))}
-                </Select>
+                    <FormGroup>
+                        {genres.map((genre) => (
+                            <FormControlLabel
+                                key={genre._id}
+                                control={
+                                    <Checkbox
+                                        checked={form.genres.includes(genre._id)}
+                                        onChange={handleGenreChange}
+                                        value={genre._id}
+                                        name={genre.name}
+                                    />
+                                }
+                                label={genre.name}
+                            />
+                        ))}
+                    </FormGroup>
+                </Paper>
             </FormControl>
             <Button variant="contained" type="submit">Add New Book</Button>
         </Box>
