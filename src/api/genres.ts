@@ -23,7 +23,7 @@ export const getGenre = async (id: string): Promise<Genre | undefined> => {
     }
 }
 
-export const addGenre = async (newGenre: Genre) => {
+export const addGenre = async (newGenre: Pick<Genre, "name">) => {
     try {
         const { data } = await axios.post(`${API_URL}/genres`, newGenre);
         console.log(data, "added successfully");
