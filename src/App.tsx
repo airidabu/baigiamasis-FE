@@ -18,29 +18,43 @@ import EditBookPage from "./pages/EditBookPage.tsx";
 import PublishersPage from "./pages/PublishersPage.tsx";
 import { PublishersProvider } from "./contexts/PublishersContext.tsx";
 import PublisherPage from "./pages/PublisherPage.tsx";
+import DashboardPage from "./pages/DashboardPage.tsx";
+import { BooksProvider } from "./contexts/BooksContext.tsx";
+import { GenresProvider } from "./contexts/GenresContext.tsx";
 
 const App: React.FC = () => {
 
   return (
     <Router>
       <PublishersProvider>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<HomePage />} />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/register" element={<RegistrationForm />} />
-            <Route path="/genres" element={<GenresPage />} />
-            <Route path="/books" element={<BooksPage />} />
-            <Route path="/books/:id" element={<BookPage />} />
-            <Route path="/reviews" element={<ReviewsPage />} />
-            <Route path="/publishers" element={<PublishersPage />} />
-            <Route path="/publishers/:id" element={<PublisherPage />} />
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
-            <Route element={<ProtectedRoute allowedRoles={["admin", "author"]} />}>
-              <Route path="/books/edit/:id" element={<EditBookPage />} />
-            </Route>
-          </Route>
-        </Routes>
+        <BooksProvider>
+          <GenresProvider>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<HomePage />} />
+                <Route path="/login" element={<LoginForm />} />
+                <Route path="/register" element={<RegistrationForm />} />
+                <Route path="/genres" element={<GenresPage />} />
+                <Route path="/books" element={<BooksPage />} />
+                <Route path="/books/:id" element={<BookPage />} />
+                <Route path="/reviews" element={<ReviewsPage />} />
+                <Route path="/publishers" element={<PublishersPage />} />
+                <Route path="/publishers/:id" element={<PublisherPage />} />
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+                {/* Protected routes for any authenticated user */}
+                <Route element={<ProtectedRoute allowedRoles={["admin", "user", "author"]} />}>
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                </Route>
+
+                {/* Protected routes for admin and author only */}
+                <Route element={<ProtectedRoute allowedRoles={["admin", "author"]} />}>
+                  <Route path="/books/edit/:id" element={<EditBookPage />} />
+                </Route>
+              </Route>
+            </Routes>
+          </GenresProvider>
+        </BooksProvider>
       </PublishersProvider>
     </Router>
   )

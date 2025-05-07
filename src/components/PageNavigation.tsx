@@ -13,7 +13,7 @@ import { Button, FormControlLabel, Switch } from "@mui/material";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { useAuth } from "../contexts/AuthContext";
 
-const pages = [
+const publicPages = [
     {
         name: "Home",
         link: "/"
@@ -33,6 +33,13 @@ const pages = [
     {
         name: "Publishers",
         link: "/publishers"
+    }
+];
+
+const authPages = [
+    {
+        name: "Dashboard",
+        link: "/dashboard"
     }
 ];
 
@@ -64,6 +71,7 @@ const PageNavigation: React.FC = () => {
         navigate("/");
     }
 
+    const pages = [...publicPages, ...(isAuthenticated ? authPages : [])];
 
     const createLinkElements = pages.map((page) => (
         <MenuItem
