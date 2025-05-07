@@ -87,6 +87,7 @@ const ReviewForm: React.FC<{ bookId?: string }> = ({ bookId }) => {
                 comment: "",
                 rating: 2.5
             });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             console.error("Error submitting review:", error);
 
