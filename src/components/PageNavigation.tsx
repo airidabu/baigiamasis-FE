@@ -143,14 +143,15 @@ const PageNavigation: React.FC = () => {
                                 </Button>
                             )}
                         </Box>
-                        <Box>
-                            <LightModeIcon />
+                        <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+                            <LightModeIcon fontSize="small" />
                             <Switch
                                 checked={themeMode === "dark"}
                                 onChange={toggleTheme}
                                 aria-label="Change theme"
+                                size="small"
                             />
-                            <DarkModeIcon />
+                            <DarkModeIcon fontSize="small" />
                         </Box>
                     </Toolbar>
                 </nav>
