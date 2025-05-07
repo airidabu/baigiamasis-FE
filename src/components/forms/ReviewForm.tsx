@@ -74,8 +74,8 @@ const ReviewForm: React.FC<{ bookId?: string }> = ({ bookId }) => {
         const newReview = {
             comment: form.comment.trim(),
             rating: Number(form.rating),
-            bookId: targetBookId,
-            userId: user?.id
+            book: targetBookId,
+            user: user?.id
         };
 
         console.log("Sending review data:", newReview);
