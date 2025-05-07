@@ -17,7 +17,7 @@ const BooksPageContent: React.FC = () => {
 
     useEffect(() => {
         fetchBooks();
-    });
+    }, [fetchBooks]);
 
     const createBooksCards = state.books.map((book: Book) => (
         <Box

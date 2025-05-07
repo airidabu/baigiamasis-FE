@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import { useBooks } from "../../contexts/BooksContext.tsx";
 import Genre from "../../types/Genre.ts";
 import { getGenres } from "../../api/genres.ts";
+import { getPublishers } from "../../api/publishers.ts";
+import Publisher from "../../types/Publisher.ts";
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Paper, TextField } from "@mui/material";
+import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, MenuItem, Paper, Select, SelectChangeEvent, TextField } from "@mui/material";
+import InputLabel from "@mui/material/InputLabel";
 
 const BooksForm: React.FC = () => {
     const [genres, setGenres] = useState<Genre[]>([]);
+    const [publishers, setPublishers] = useState<Publisher[]>([]);
     const [form, setForm] = useState({
         name: "",
         description: "",
@@ -28,13 +32,31 @@ const BooksForm: React.FC = () => {
             }
         };
 
+        const fetchPublishers = async () => {
+            try {
+                const publishersData = await getPublishers();
+                setPublishers(publishersData);
+            } catch (error) {
+                console.error("Failed to fetch publishers:", error);
+            }
+        };
+
         fetchGenres();
+        fetchPublishers();
     }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({
             ...form,
             [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSelectChange = (e: SelectChangeEvent) => {
+        const { name, value } = e.target;
+        setForm({
+            ...form,
+            [name as string]: value
         });
     };
 
@@ -51,7 +73,6 @@ const BooksForm: React.FC = () => {
                 genres: form.genres.filter(genreId => genreId !== value)
             })
         }
-
     }
 
     const { createBook } = useBooks();
@@ -68,8 +89,8 @@ const BooksForm: React.FC = () => {
             genres: form.genres,
             pageNumber: parseInt(form.pageNumber),
         };
-
-        createBook(newBook).then(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        createBook(newBook as any).then(() => {
             console.log("Successfully added new book", newBook);
         });
 
@@ -128,16 +149,25 @@ const BooksForm: React.FC = () => {
                 onChange={handleInputChange}
                 slotProps={{ inputLabel: { shrink: true } }}
             />
-            <TextField
-                label="Publisher ID"
-                variant="outlined"
-                fullWidth
-                required
-                name="publisher"
-                value={form.publisher}
-                onChange={handleInputChange}
-                helperText="Enter publisher ID (will be select dropdown later)"
-            />
+
+            <FormControl fullWidth required>
+                <InputLabel id="publisher-select-label">Publisher</InputLabel>
+                <Select
+                    labelId="publisher-select-label"
+                    id="publisher-select"
+                    value={form.publisher}
+                    label="Publisher"
+                    name="publisher"
+                    onChange={handleSelectChange}
+                >
+                    {publishers.map((publisher) => (
+                        <MenuItem key={publisher._id} value={publisher._id}>
+                            {publisher.name}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
             <TextField
                 label="Page Number"
                 variant="outlined"
