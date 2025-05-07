@@ -1,13 +1,16 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Box, Typography, Paper, Grid, Card, CardContent, CircularProgress, Button } from "@mui/material";
+import { Box, Typography, Paper, Grid, Card, CardContent, CircularProgress, Button, List, ListItem, ListItemText, Divider } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import { useBooks } from "../contexts/BooksContext";
 import { usePublishers } from "../contexts/PublishersContext";
 import { useGenres } from "../contexts/GenresContext";
 import { useUsers } from "../contexts/UsersContext";
 import EditProfileForm from "../components/forms/EditProfileForm";
+import Book from "../types/Book";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const DashboardPage = () => {
     const { isAuthenticated, userRole, user } = useAuth();
@@ -18,6 +21,46 @@ const DashboardPage = () => {
     const { fetchUsers, state: usersState } = useUsers();
     const [isLoading, setIsLoading] = useState(true);
     const [editProfileOpen, setEditProfileOpen] = useState(false);
+    const [pendingBooks, setPendingBooks] = useState<Book[]>([]);
+
+    const fetchPendingBooks = async () => {
+        try {
+            const response = await fetch(`${API_URL}/books/status/pending`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            if (!response.ok) throw new Error('Failed to fetch pending books');
+            const data = await response.json();
+            setPendingBooks(data);
+        } catch (error) {
+            console.error("Error fetching pending books:", error);
+        }
+    };
+
+    const approveBook = async (bookId: string) => {
+        try {
+            const response = await fetch(`${API_URL}/status/${bookId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ status: 'approved' })
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error(`Failed to approve book: ${response.status}`, errorText);
+                throw new Error(`Failed to approve book: ${response.status}`);
+            }
+
+            setPendingBooks(prevBooks => prevBooks.filter(book => book._id !== bookId));
+
+            fetchBooks();
+        } catch (error) {
+            console.error("Error approving book:", error);
+        }
+    }
 
     const loadData = async () => {
         setIsLoading(true);
@@ -26,7 +69,8 @@ const DashboardPage = () => {
                 fetchBooks(),
                 fetchPublishers(),
                 fetchGenres(),
-                userRole === 'admin' ? fetchUsers() : Promise.resolve()
+                userRole === 'admin' ? fetchUsers() : Promise.resolve(),
+                userRole === 'admin' ? fetchPendingBooks() : Promise.resolve()
             ]);
         } catch (error) {
             console.error("Error loading dashboard data:", error);
@@ -93,6 +137,55 @@ const DashboardPage = () => {
                     </Card>
                 </Grid>
             </Grid>
+
+            <Box sx={{ mt: 4 }}>
+                <Typography variant="h5" sx={{ mb: 2 }}>Pending Books</Typography>
+                <Paper elevation={2} sx={{ p: 2 }}>
+                    {pendingBooks.length > 0 ? (
+                        <List>
+                            {pendingBooks.map((book, index) => (
+                                <div key={book._id}>
+                                    <ListItem>
+                                        <ListItemText
+                                            primary={book.name}
+                                            secondary={
+                                                <>
+                                                    <Typography component="span" variant="body2">
+                                                        Author: {book.author?.name} {book.author?.surname || ''}
+                                                    </Typography>
+                                                    <br />
+                                                    <Typography component="span" variant="body2">
+                                                        Publisher: {book.publisher?.name || 'Unknown'} | Status: Pending
+                                                    </Typography>
+                                                </>
+                                            }
+                                        />
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            onClick={() => navigate(`/books/${book._id}`)}
+                                        >
+                                            View Details
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            size="small"
+                                            onClick={() => approveBook(book._id!)}
+                                            sx={{ ml: 1 }}
+                                        >
+                                            Approve
+                                        </Button>
+                                    </ListItem>
+                                    {index < pendingBooks.length - 1 && <Divider />}
+                                </div>
+                            ))}
+                        </List>
+                    ) : (
+                        <Typography variant="body1">No pending books at the moment</Typography>
+                    )}
+                </Paper>
+            </Box>
         </Box>
     );
 
@@ -153,7 +246,6 @@ const DashboardPage = () => {
     );
 
     const handleProfileUpdateSuccess = () => {
-        // Reload dashboard data after profile update
         loadData();
     };
 
