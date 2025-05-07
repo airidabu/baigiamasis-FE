@@ -2,12 +2,30 @@ import { useEffect, useState } from "react";
 import { useBooks } from "../../contexts/BooksContext.tsx";
 import Genre from "../../types/Genre.ts";
 import { getGenres } from "../../api/genres.ts";
+import { getPublishers } from "../../api/publishers.ts";
+import Publisher from "../../types/Publisher.ts";
+import Book from "../../types/Book.ts";
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Paper, TextField } from "@mui/material";
+import { Alert, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, MenuItem, Paper, Select, SelectChangeEvent, Snackbar, TextField } from "@mui/material";
+import InputLabel from "@mui/material/InputLabel";
 
-const BooksForm: React.FC = () => {
+interface BooksFormProps {
+    mode?: "create" | "edit";
+    book?: Book;
+    onSuccess?: () => void;
+    onCancel?: () => void;
+}
+
+const BooksForm: React.FC<BooksFormProps> = ({ mode = "create", book, onSuccess, onCancel }) => {
     const [genres, setGenres] = useState<Genre[]>([]);
+    const [publishers, setPublishers] = useState<Publisher[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const isEdit = mode === "edit";
+
     const [form, setForm] = useState({
         name: "",
         description: "",
@@ -28,13 +46,48 @@ const BooksForm: React.FC = () => {
             }
         };
 
+        const fetchPublishers = async () => {
+            try {
+                const publishersData = await getPublishers();
+                setPublishers(publishersData);
+            } catch (error) {
+                console.error("Failed to fetch publishers:", error);
+            }
+        };
+
         fetchGenres();
+        fetchPublishers();
     }, []);
+
+    useEffect(() => {
+        if (isEdit && book) {
+            setForm({
+                name: book.name || "",
+                description: book.description || "",
+                pictureUrl: book.pictureUrl || "",
+                releaseDate: book.releaseDate ? new Date(book.releaseDate).toISOString().split('T')[0] : "",
+                publisher: book.publisher ? (typeof book.publisher !== 'string' ? book.publisher._id as string : book.publisher) : "",
+                genres: book.genres ?
+                    book.genres.map(genre =>
+                        typeof genre !== 'string' ? genre._id || "" : genre
+                    ) : [],
+                pageNumber: book.pageNumber ? book.pageNumber.toString() : "",
+            });
+        }
+    }, [isEdit, book]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({
             ...form,
             [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSelectChange = (e: SelectChangeEvent) => {
+        const { name, value } = e.target;
+        setForm({
+            ...form,
+            [name as string]: value
         });
     };
 
@@ -51,45 +104,68 @@ const BooksForm: React.FC = () => {
                 genres: form.genres.filter(genreId => genreId !== value)
             })
         }
-
     }
 
-    const { createBook } = useBooks();
+    const { createBook, updateBookData } = useBooks();
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setLoading(true);
+        setError(null);
 
-        const newBook = {
-            name: form.name,
-            description: form.description,
-            pictureUrl: form.pictureUrl,
-            releaseDate: form.releaseDate,
-            publisher: form.publisher,
-            genres: form.genres,
-            pageNumber: parseInt(form.pageNumber),
-        };
+        try {
+            const bookData = {
+                name: form.name,
+                description: form.description,
+                pictureUrl: form.pictureUrl,
+                releaseDate: form.releaseDate,
+                publisher: { _id: form.publisher } as Publisher,
+                genres: form.genres.map(id => ({ _id: id } as Genre)),
+                pageNumber: parseInt(form.pageNumber),
+            };
 
-        createBook(newBook).then(() => {
-            console.log("Successfully added new book", newBook);
-        });
+            if (isEdit && book?._id) {
+                await updateBookData(book._id, bookData);
+                setSuccess(true);
+                if (onSuccess) onSuccess();
+            } else {
+                await createBook(bookData);
+                setSuccess(true);
+                setForm({
+                    name: "",
+                    description: "",
+                    pictureUrl: "",
+                    releaseDate: "",
+                    publisher: "",
+                    genres: [],
+                    pageNumber: "",
+                });
+                if (onSuccess) onSuccess();
+            }
+        } catch (err) {
+            console.error("Error saving book:", err);
+            setError("Failed to save book. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        setForm({
-            name: "",
-            description: "",
-            pictureUrl: "",
-            releaseDate: "",
-            publisher: "",
-            genres: [],
-            pageNumber: "",
-        });
+    const handleCloseSnackbar = () => {
+        setError(null);
+        setSuccess(false);
     };
 
     return (
         <Box
             component="form"
             onSubmit={handleSubmit}
-            sx={{ display: "flex", flexDirection: "column", gap: 2, maxWidth: "400px", mx: "auto" }}
+            sx={{ display: "flex", flexDirection: "column", gap: 2, maxWidth: "600px", mx: "auto" }}
         >
+            {error && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {error}
+                </Alert>
+            )}
             <TextField
                 label="Name"
                 variant="outlined"
@@ -128,16 +204,25 @@ const BooksForm: React.FC = () => {
                 onChange={handleInputChange}
                 slotProps={{ inputLabel: { shrink: true } }}
             />
-            <TextField
-                label="Publisher ID"
-                variant="outlined"
-                fullWidth
-                required
-                name="publisher"
-                value={form.publisher}
-                onChange={handleInputChange}
-                helperText="Enter publisher ID (will be select dropdown later)"
-            />
+
+            <FormControl fullWidth required>
+                <InputLabel id="publisher-select-label">Publisher</InputLabel>
+                <Select
+                    labelId="publisher-select-label"
+                    id="publisher-select"
+                    value={form.publisher}
+                    label="Publisher"
+                    name="publisher"
+                    onChange={handleSelectChange}
+                >
+                    {publishers.map((publisher) => (
+                        <MenuItem key={publisher._id} value={publisher._id}>
+                            {publisher.name}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
             <TextField
                 label="Page Number"
                 variant="outlined"
@@ -176,7 +261,49 @@ const BooksForm: React.FC = () => {
                     </FormGroup>
                 </Paper>
             </FormControl>
-            <Button variant="contained" type="submit">Add New Book</Button>
+
+            {isEdit ? (
+                <Grid container spacing={2}>
+                    {onCancel && (
+                        <Grid>
+                            <Button
+                                type="button"
+                                variant="outlined"
+                                onClick={onCancel}
+                                sx={{ mr: 1 }}
+                                disabled={loading}
+                            >
+                                Cancel
+                            </Button>
+                        </Grid>
+                    )}
+                    <Grid>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            disabled={loading}
+                        >
+                            {loading ? "Saving..." : "Update Book"}
+                        </Button>
+                    </Grid>
+                </Grid>
+            ) : (
+                <Button
+                    variant="contained"
+                    type="submit"
+                    disabled={loading}
+                >
+                    {loading ? "Adding..." : "Add New Book"}
+                </Button>
+            )}
+
+            <Snackbar
+                open={success}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                message={isEdit ? "Book updated successfully!" : "Book added successfully!"}
+            />
         </Box>
     );
 };

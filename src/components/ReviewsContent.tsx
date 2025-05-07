@@ -1,9 +1,9 @@
 import Review from "../types/Review.ts";
 import { useReviews } from "../contexts/ReviewsContext.tsx";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ReviewForm from "./forms/ReviewForm.tsx";
 import Box from "@mui/material/Box";
-import { Button, Paper, Rating, Stack, Typography, useTheme, useMediaQuery } from "@mui/material";
+import { Button, Paper, Rating, Stack, Typography, useTheme, useMediaQuery, CircularProgress } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
@@ -23,9 +23,16 @@ const ReviewsContent: React.FC<{ bookId: string }> = ({ bookId }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { userRole } = useAuth();
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        fetchReviews(bookId);
+        const loadReviews = async () => {
+            setIsLoading(true);
+            await fetchReviews(bookId);
+            setIsLoading(false);
+        };
+
+        loadReviews();
     }, [bookId, fetchReviews]);
 
     const createReviewElements = state.reviews.map((review: Review) => (
@@ -39,7 +46,9 @@ const ReviewsContent: React.FC<{ bookId: string }> = ({ bookId }) => {
         >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                 <Typography component="span" variant="body2" color="text.secondary" fontWeight="medium">
-                    {review.user ? `${review.user.name} ${review.user.surname}` : review.nickname}
+                    {review.user ?
+                        (typeof review.user === 'object' ? `${review.user.name} ${review.user.surname}` : review.user)
+                        : review.nickname}
                 </Typography>
                 <StyledRating
                     name="customized-rating"
@@ -103,17 +112,25 @@ const ReviewsContent: React.FC<{ bookId: string }> = ({ bookId }) => {
                 >
                     Reviews
                 </Typography>
-                <Stack spacing={{ xs: 1.5, sm: 2 }}>
-                    {createReviewElements.length > 0
-                        ? createReviewElements
-                        : <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ py: 2, textAlign: 'center' }}
-                        >
-                            No reviews yet. Be the first to review!
-                        </Typography>}
-                </Stack>
+
+                {isLoading ? (
+                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", py: 4 }}>
+                        <CircularProgress size={50} />
+                        <Typography variant="body1" sx={{ mt: 2 }}>Loading reviews...</Typography>
+                    </Box>
+                ) : (
+                    <Stack spacing={{ xs: 1.5, sm: 2 }}>
+                        {createReviewElements.length > 0
+                            ? createReviewElements
+                            : <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ py: 2, textAlign: 'center' }}
+                            >
+                                No reviews yet. Be the first to review!
+                            </Typography>}
+                    </Stack>
+                )}
             </Box>
         </Box>
     );
