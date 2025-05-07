@@ -1,5 +1,5 @@
 import { BookAction, bookReducer, BookState, initialState } from "../reducers/bookReducer.ts";
-import { getBooks, addBook, deleteBook } from "../api/books.ts";
+import { getBooks, addBook, deleteBook, updateBook } from "../api/books.ts";
 import Book from "../types/Book.ts";
 import { createContext, Dispatch, ReactNode, useContext, useReducer } from "react";
 
@@ -9,6 +9,7 @@ type BooksContextType = {
     fetchBooks: () => Promise<void>;
     createBook: (book: Omit<Book, "id">) => Promise<void>;
     removeBook: (id: string) => Promise<void>;
+    updateBookData: (id: string, book: Partial<Book>) => Promise<void>;
 }
 
 const BooksContext = createContext<BooksContextType | undefined>(undefined);
@@ -43,8 +44,20 @@ export const BooksProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         }
     }
 
+    const updateBookData = async (id: string, book: Partial<Book>) => {
+        try {
+            const updatedBook = await updateBook(id, book);
+            if (updatedBook) {
+                dispatch({ type: "UPDATE_BOOK", payload: updatedBook });
+            }
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     return (
-        <BooksContext.Provider value={{ state, dispatch, fetchBooks, createBook, removeBook }}>
+        <BooksContext.Provider value={{ state, dispatch, fetchBooks, createBook, removeBook, updateBookData }}>
             {children}
         </BooksContext.Provider>
     )

@@ -24,7 +24,7 @@ const BooksPageContent: React.FC = () => {
         };
 
         loadBooks();
-    }, [fetchBooks]);
+    }, []);
 
     const createBooksCards = state.books.map((book: Book) => (
         <Box
