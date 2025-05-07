@@ -24,20 +24,20 @@ export const getUser = async (id: string): Promise<User | undefined> => {
 }
 
 export interface UpdateUserData {
-    name?: string;
-    surname?: string;
-    email?: string;
-    birthday?: Date | null;
+    name: string;
+    surname: string;
+    email: string;
+    birthday: string | null;
     password?: string;
-    currentPassword?: string;
 }
 
-export const updateUser = async (id: string, userData: UpdateUserData): Promise<User | undefined> => {
+export const updateUser = async (userId: string, data: UpdateUserData) => {
     try {
-        const { data } = await axios.put(`${API_URL}/users/update/${id}`, userData);
-        return data;
+        const response = await axios.put(`${API_URL}/users/update/${userId}`, data);
+        console.log('Backend response:', response.data); // Debugging log
+        return response;
     } catch (error) {
-        console.error("Error updating user", error);
+        console.error('Error in updateUser:', error);
         throw error;
     }
-}
+};

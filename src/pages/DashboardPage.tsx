@@ -19,27 +19,27 @@ const DashboardPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [editProfileOpen, setEditProfileOpen] = useState(false);
 
+    const loadData = async () => {
+        setIsLoading(true);
+        try {
+            await Promise.all([
+                fetchBooks(),
+                fetchPublishers(),
+                fetchGenres(),
+                userRole === 'admin' ? fetchUsers() : Promise.resolve()
+            ]);
+        } catch (error) {
+            console.error("Error loading dashboard data:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (!isAuthenticated) {
             navigate("/login");
             return;
         }
-
-        const loadData = async () => {
-            setIsLoading(true);
-            try {
-                await Promise.all([
-                    fetchBooks(),
-                    fetchPublishers(),
-                    fetchGenres(),
-                    userRole === 'admin' ? fetchUsers() : Promise.resolve()
-                ]);
-            } catch (error) {
-                console.error("Error loading dashboard data:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
 
         loadData();
     }, [isAuthenticated, navigate, userRole]);
@@ -152,6 +152,11 @@ const DashboardPage = () => {
         </Box>
     );
 
+    const handleProfileUpdateSuccess = () => {
+        // Reload dashboard data after profile update
+        loadData();
+    };
+
     return (
         <Paper elevation={3} sx={{ p: 3, maxWidth: 1200, mx: "auto", my: 3 }}>
             <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -178,6 +183,7 @@ const DashboardPage = () => {
             <EditProfileForm
                 open={editProfileOpen}
                 onClose={() => setEditProfileOpen(false)}
+                onSuccess={handleProfileUpdateSuccess}
             />
         </Paper>
     );

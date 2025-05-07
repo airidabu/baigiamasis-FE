@@ -10,11 +10,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 interface EditProfileFormProps {
     open: boolean;
     onClose: () => void;
-    onSuccess: () => void;
+    onSuccess?: () => void;
 }
 
-const EditProfileForm: React.FC<EditProfileFormProps> = ({ open, onClose }) => {
-    const { user } = useAuth();
+const EditProfileForm: React.FC<EditProfileFormProps> = ({ open, onClose, onSuccess }) => {
+    const { user, login } = useAuth();
     const [formData, setFormData] = useState<UpdateUserData>({
         name: '',
         surname: '',
@@ -22,6 +22,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ open, onClose }) => {
         birthday: null,
         password: '',
     });
+    const [birthdayDate, setBirthdayDate] = useState<Date | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -32,9 +33,12 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ open, onClose }) => {
                 name: user.name || '',
                 surname: user.surname || '',
                 email: user.email || '',
-                birthday: user.birthday ? new Date(user.birthday) : null,
+                birthday: user.birthday || null,
                 password: '',
             });
+
+            // Set the separate date state for the date picker
+            setBirthdayDate(user.birthday ? new Date(user.birthday) : null);
         }
     }, [user]);
 
@@ -44,7 +48,29 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ open, onClose }) => {
     };
 
     const handleBirthdayChange = (date: Date | null) => {
-        setFormData((prev) => ({ ...prev, birthday: date }));
+        // Only set valid dates or null
+        if (date === null || (date instanceof Date && !isNaN(date.getTime()))) {
+            setBirthdayDate(date);
+
+            // Format the date as a string for the formData
+            if (date) {
+                const formattedDate = formatDateForAPI(date);
+                setFormData(prev => ({ ...prev, birthday: formattedDate }));
+            } else {
+                setFormData(prev => ({ ...prev, birthday: null }));
+            }
+        }
+    };
+
+    const formatDateForAPI = (date: Date | null): string | null => {
+        if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+            return null;
+        }
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -64,39 +90,31 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ open, onClose }) => {
                 return;
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const cleanData: Record<string, any> = {
+            // Create cleanData with the correct UpdateUserData type
+            const cleanData: UpdateUserData = {
                 name: formData.name,
                 surname: formData.surname,
                 email: formData.email,
+                birthday: formatDateForAPI(birthdayDate),
+                password: formData.password && formData.password.trim() !== '' ? formData.password : '',
             };
-
-            if (formData.password && formData.password.trim() !== '') {
-                cleanData.password = formData.password;
-            }
-
-            if (formData.birthday) {
-                if (formData.birthday instanceof Date && !isNaN(formData.birthday.getTime())) {
-                    const year = formData.birthday.getFullYear();
-                    const month = String(formData.birthday.getMonth() + 1).padStart(2, '0');
-                    const day = String(formData.birthday.getDate()).padStart(2, '0');
-                    cleanData.birthday = `${year}-${month}-${day}`;
-                } else {
-                    // If it's not a valid date object, don't send it
-                    console.warn("Invalid birthday date format, skipping this field");
-                }
-            } else {
-                cleanData.birthday = null;
-            }
 
             console.log('Sending update data:', JSON.stringify(cleanData));
 
             const response = await updateUser(user.id, cleanData);
             console.log('Update response:', response);
 
+            if (response.data && response.data.token) {
+                const newToken = response.data.token;
+                login(newToken);
+            } else {
+                console.warn('No token received in the response');
+            }
+
             setSuccess(true);
 
             setTimeout(() => {
+                if (onSuccess) onSuccess();
                 onClose();
             }, 1500);
         } catch (error) {
@@ -177,9 +195,15 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ open, onClose }) => {
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <DatePicker
                                     label="Birthday (Optional)"
-                                    value={formData.birthday}
+                                    value={birthdayDate}
                                     onChange={handleBirthdayChange}
-                                    slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
+                                    slotProps={{
+                                        textField: {
+                                            fullWidth: true,
+                                            margin: 'normal',
+                                            helperText: "Select your date of birth"
+                                        }
+                                    }}
                                 />
                             </LocalizationProvider>
                         </Grid>
