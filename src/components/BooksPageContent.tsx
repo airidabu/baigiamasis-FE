@@ -7,7 +7,7 @@ import ItemsContainer from "./ItemsContainer.tsx";
 import BooksForm from "./forms/BooksForm.tsx";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
-import { Button, Collapse, CircularProgress, Typography } from "@mui/material";
+import { Button, Collapse, CircularProgress, Typography, useTheme, useMediaQuery } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext.tsx";
 
 const BooksPageContent: React.FC = () => {
@@ -15,6 +15,8 @@ const BooksPageContent: React.FC = () => {
     const [isFormOpen, setFormOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const { userRole, isAuthenticated } = useAuth();
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
         const loadBooks = async () => {
@@ -30,15 +32,15 @@ const BooksPageContent: React.FC = () => {
         <Box
             key={book._id}
             sx={{
-                width: 240,
-                height: 340,
+                width: isSmallScreen ? '100%' : 240,
+                height: isSmallScreen ? 'auto' : 340,
                 margin: 1
             }}
         >
             <Link to={`/books/${book._id}`} style={{
                 textDecoration: "none",
                 display: "block",
-                height: "calc(100% - 40px)"
+                height: isSmallScreen ? "auto" : "calc(100% - 40px)"
             }}>
                 <BookCard
                     title={book.name}
@@ -47,6 +49,37 @@ const BooksPageContent: React.FC = () => {
             </Link>
         </Box>
     ))
+
+    if (isSmallScreen) {
+        return (
+            <Container>
+                {isAuthenticated && (userRole === "admin" || userRole === "author") && (
+                    <Box sx={{ width: '100%', mb: 3 }}>
+                        <Button
+                            variant="contained"
+                            onClick={() => setFormOpen((prev) => !prev)}
+                            sx={{ width: '100%', mb: 1 }}
+                        >
+                            {isFormOpen ? "Close Form" : "Add New Book"}
+                        </Button>
+                        <Collapse in={isFormOpen}>
+                            <BooksForm />
+                        </Collapse>
+                    </Box>
+                )}
+                {isLoading ? (
+                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "50vh" }}>
+                        <CircularProgress size={60} />
+                        <Typography variant="h6" sx={{ mt: 2 }}>Loading books...</Typography>
+                    </Box>
+                ) : (
+                    <Box sx={{ display: "flex", flexDirection: "column" }}>
+                        <ItemsContainer children={createBooksCards}></ItemsContainer>
+                    </Box>
+                )}
+            </Container>
+        );
+    }
 
     return (
         <Container>
