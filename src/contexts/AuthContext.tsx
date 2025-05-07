@@ -62,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 surname: decoded.surname,
                 email: decoded.email,
                 role: decoded.roles,
-                birthday: decoded.birthday || null, // Include birthday from token
+                birthday: decoded.birthday || null,
             };
         } catch (error) {
             console.error("Error decoding token:", error);

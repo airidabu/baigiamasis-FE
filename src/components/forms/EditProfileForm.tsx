@@ -13,7 +13,7 @@ interface EditProfileFormProps {
     onSuccess: () => void;
 }
 
-const EditProfileForm: React.FC<EditProfileFormProps> = ({ open, onClose, onSuccess }) => {
+const EditProfileForm: React.FC<EditProfileFormProps> = ({ open, onClose }) => {
     const { user } = useAuth();
     const [formData, setFormData] = useState<UpdateUserData>({
         name: '',
@@ -95,7 +95,6 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ open, onClose, onSucc
             console.log('Update response:', response);
 
             setSuccess(true);
-            onSuccess();
 
             setTimeout(() => {
                 onClose();

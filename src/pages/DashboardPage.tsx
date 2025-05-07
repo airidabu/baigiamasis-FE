@@ -44,10 +44,6 @@ const DashboardPage = () => {
         loadData();
     }, [isAuthenticated, navigate, userRole]);
 
-    const handleEditProfileSuccess = () => {
-        // You might want to refresh user data here if needed
-    };
-
     if (isLoading) {
         return (
             <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "50vh" }}>
@@ -182,7 +178,6 @@ const DashboardPage = () => {
             <EditProfileForm
                 open={editProfileOpen}
                 onClose={() => setEditProfileOpen(false)}
-                onSuccess={handleEditProfileSuccess}
             />
         </Paper>
     );
