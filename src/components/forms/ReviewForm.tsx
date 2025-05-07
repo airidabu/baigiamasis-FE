@@ -1,9 +1,10 @@
-import {useState} from "react";
-import {useReviews} from "../../contexts/ReviewsContext.tsx";
-import {useParams} from "react-router";
+import { useState } from "react";
+import { useReviews } from "../../contexts/ReviewsContext.tsx";
+import { useParams, Link as RouterLink } from "react-router";
+import { useAuth } from "../../contexts/AuthContext.tsx";
 import Box from "@mui/material/Box";
-import {Button, Rating, TextField} from "@mui/material";
-import {styled} from "@mui/material/styles";
+import { Button, Rating, TextField, Typography, Paper, Link, Alert, Snackbar } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const StyledRating = styled(Rating)(({ theme }) => ({
@@ -15,108 +16,166 @@ const StyledRating = styled(Rating)(({ theme }) => ({
     }
 }));
 
-const ReviewForm: React.FC = () =>{
+const ReviewForm: React.FC<{ bookId?: string }> = ({ bookId }) => {
     const { id } = useParams();
-    const[form, setForm] = useState({
-        nickname: "",
-        email: "",
-        text:"",
+    const { isAuthenticated, user } = useAuth();
+    const [form, setForm] = useState({
+        comment: "",
         rating: 2.5
-    })
-
-    const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value
-        })
-    }
+    });
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
 
     const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setForm({
             ...form,
             [e.target.name]: e.target.value
-        })
-    }
+        });
+    };
 
     const handleRatingChange = (
         _: React.SyntheticEvent | null,
         newValue: number | null
     ) => {
-        setForm((prevForm) => (
-            {
-                ...prevForm,
-                rating: newValue ?? 0
-            }
-        ))
-    }
-    const {createReview} = useReviews();
+        setForm((prevForm) => ({
+            ...prevForm,
+            rating: newValue ?? 0
+        }));
+    };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const { createReview } = useReviews();
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const newReview = {
-            nickname: form.nickname,
-            email: form.email,
-            text: form.text,
-            rating: form.rating,
-            bookId: id!
+        setError(null);
+
+        if (!isAuthenticated) {
+            setError("You must be logged in to submit a review");
+            return;
         }
 
-        createReview(newReview).then(() => {
-            console.log(newReview);
-        })
+        const targetBookId = bookId || id;
 
-        setForm({
-            ...form,
-            nickname: "",
-            email: "",
-            text: "",
-            rating: 2.5
-        })
+        if (!targetBookId) {
+            setError("No book ID available");
+            return;
+        }
 
+        if (!form.comment.trim()) {
+            setError("Comment cannot be empty");
+            return;
+        }
+
+        if (form.rating <= 0) {
+            setError("Please provide a rating");
+            return;
+        }
+
+        const newReview = {
+            comment: form.comment.trim(),
+            rating: Number(form.rating),
+            book: targetBookId,
+            user: user?.id
+        };
+
+        console.log("Sending review data:", newReview);
+
+        try {
+            await createReview(newReview);
+            setSuccess(true);
+            setForm({
+                comment: "",
+                rating: 2.5
+            });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            console.error("Error submitting review:", error);
+
+            if (error.response && error.response.data) {
+                console.error("Server error details:", error.response.data);
+                setError(`Server error: ${error.response.data.message || error.response.statusText}`);
+            } else {
+                setError("Failed to submit review. Please try again.");
+            }
+        }
+    };
+
+    if (!isAuthenticated) {
+        return (
+            <Paper elevation={3} sx={{ p: 3, mb: 3, bgcolor: "background.paper" }}>
+                <Typography variant="h6" gutterBottom>
+                    Want to share your review?
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                    Please <Link component={RouterLink} to="/login" color="secondary" sx={{ fontWeight: 'bold' }}>
+                        login</Link> or <Link component={RouterLink} to="/register" color="secondary" sx={{ fontWeight: 'bold' }}>
+                        register</Link> to leave a review.
+                </Typography>
+            </Paper>
+        );
     }
+
     return (
-        <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{display: "flex", flexDirection: "column", gap: 2, maxWidth: "400px"}}
-        >
-            <TextField
-                label="Nickname"
-                variant="outlined"
-                fullWidth
-                name="nickname"
-                value={form.nickname}
-                onChange={handleTextChange}
+        <>
+            {error && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {error}
+                </Alert>
+            )}
+            <Snackbar
+                open={success}
+                autoHideDuration={6000}
+                onClose={() => setSuccess(false)}
+                message="Review submitted successfully!"
             />
-            <TextField
-                label="Email"
-                variant="outlined"
-                fullWidth
-                name="email"
-                value={form.email}
-                onChange={handleTextChange}
-            />
-            <TextField
-                multiline
-                label="Text"
-                variant="outlined"
-                fullWidth
-                name="text"
-                value={form.text}
-                onChange={handleTextAreaChange}
-            />
-            <StyledRating
-                name="rating"
-                value={form.rating}
-                precision={0.5}
-                defaultValue={0}
-                icon={<FavoriteIcon fontSize="inherit" />}
-                emptyIcon={<FavoriteIcon fontSize="inherit" />}
-                onChange={handleRatingChange}
-            />
-            <Button type="submit" variant="contained">Submit</Button>
-        </Box>
-    )
-}
+            <Box
+                component="form"
+                onSubmit={handleSubmit}
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    maxWidth: "400px",
+                    p: 2,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 1,
+                }}
+            >
+                <Typography variant="h6">Add Your Review</Typography>
+                <TextField
+                    multiline
+                    label="Comment"
+                    variant="outlined"
+                    fullWidth
+                    name="comment"
+                    value={form.comment}
+                    onChange={handleTextAreaChange}
+                    required
+                    rows={4}
+                />
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography component="span">Rating:</Typography>
+                    <StyledRating
+                        name="rating"
+                        value={form.rating}
+                        precision={0.5}
+                        defaultValue={2.5}
+                        icon={<FavoriteIcon fontSize="inherit" />}
+                        emptyIcon={<FavoriteIcon fontSize="inherit" />}
+                        onChange={handleRatingChange}
+                    />
+                </Box>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={!form.comment.trim() || form.rating <= 0}
+                >
+                    Submit Review
+                </Button>
+            </Box>
+        </>
+    );
+};
 
 export default ReviewForm;

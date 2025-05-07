@@ -1,9 +1,9 @@
-import {useEffect, useState, CSSProperties} from "react";
-import {getBook} from "../api/books.ts";
+import { useEffect, useState, CSSProperties } from "react";
+import { getBook } from "../api/books.ts";
 import Book from "../types/Book.ts";
-import {BounceLoader} from "react-spinners";
-import {Rating} from "@mui/material";
-import {styled} from "@mui/material/styles";
+import { BounceLoader } from "react-spinners";
+import { Box, Rating, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const override: CSSProperties = {
@@ -13,7 +13,7 @@ const override: CSSProperties = {
 }
 
 interface ReviewCardProps {
-    nickname: string;
+    name: string;
     email: string;
     bookId: string;
     text: string;
@@ -29,7 +29,7 @@ const StyledRating = styled(Rating)(({ theme }) => ({
     }
 }));
 
-const ReviewCard: React.FC<ReviewCardProps> = ({nickname, email, bookId, text, rating}) => {
+const ReviewCard: React.FC<ReviewCardProps> = ({ name, bookId, text, rating }) => {
     const [book, setBook] = useState<Book>();
 
     useEffect(() => {
@@ -39,27 +39,31 @@ const ReviewCard: React.FC<ReviewCardProps> = ({nickname, email, bookId, text, r
     return (
         <>
             {book ? (
-                    <div>
-                        <div>Review by {nickname} for {book.title}</div>
-                        <div>{email}</div>
-                        <div>Time posted </div>
-                        <p>{text}</p>
-                        <p>{rating}</p>
-                        <StyledRating
-                            name="customized-rating"
-                            value={rating}
-                            readOnly
-                            icon={<FavoriteIcon fontSize="inherit" />}
-                            emptyIcon={<FavoriteIcon fontSize="inherit" />}
-                        />
-                    </div>
-                ) : (
-                    <div>
-                       <BounceLoader
-                       color="#5D001E"
+                <Box>
+                    <Typography
+                        variant="h5"
+                        color="secondary"
+                    >
+                        Review by {name} for {book.name}
+                    </Typography>
+                    <Typography variant="h4">
+                        {text}
+                    </Typography>
+                    <StyledRating
+                        name="customized-rating"
+                        value={rating}
+                        readOnly
+                        icon={<FavoriteIcon fontSize="inherit" />}
+                        emptyIcon={<FavoriteIcon fontSize="inherit" />}
+                    />
+                </Box>
+            ) : (
+                <Box>
+                    <BounceLoader
+                        color="#5D001E"
                         cssOverride={override}
-                       />
-                    </div>
+                    />
+                </Box>
             )}
         </>
     )

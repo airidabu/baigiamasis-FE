@@ -23,22 +23,23 @@ export const getReview = async (id: string): Promise<Review | undefined> => {
     }
 }
 
-export const getBookReviews = async (id: string) => {
+export const getBookReviews = async (id: string): Promise<Review[]> => {
     try {
-        const { data } = await axios.get(`${API_URL}/reviews?bookId=${id}`);
+        const { data } = await axios.get(`${API_URL}/reviews/book/${id}`);
         return data;
     } catch (error) {
         console.error(error);
-        return undefined;
+        return [];
     }
 }
 
-export const addReview = async (newReview: Review) => {
+export const addReview = async (newReview: Review): Promise<Review> => {
     try {
         const { data } = await axios.post(`${API_URL}/reviews`, newReview);
         return data;
     } catch (error) {
         console.error("Error adding review", error);
+        throw error;
     }
 }
 
@@ -49,5 +50,6 @@ export const deleteReview = async (id: string) => {
         return data;
     } catch (error) {
         console.error("Error deleting review", error);
+        throw error;
     }
 }
