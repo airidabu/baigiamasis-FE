@@ -9,7 +9,7 @@ import { Edit, Delete } from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router";
 import { usePublishers } from "../contexts/PublishersContext";
 import { useAuth } from "../contexts/AuthContext";
-import EditPublisherForm from "../components/forms/EditPublisherForm";
+import PublishersForm from "../components/forms/PublishersForm";
 
 const PublisherPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -150,11 +150,11 @@ const PublisherPage: React.FC = () => {
                 </Grid>
             </Paper>
 
-            {/* Edit Dialog */}
             <Dialog open={openEditDialog} onClose={handleEditClose} fullWidth maxWidth="sm">
                 <DialogTitle>Edit Publisher</DialogTitle>
                 <DialogContent>
-                    <EditPublisherForm
+                    <PublishersForm
+                        mode="edit"
                         publisher={publisher}
                         onSuccess={() => {
                             setOpenEditDialog(false);
@@ -165,7 +165,6 @@ const PublisherPage: React.FC = () => {
                 </DialogContent>
             </Dialog>
 
-            {/* Delete Confirmation Dialog */}
             <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
                 <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogContent>
@@ -177,7 +176,6 @@ const PublisherPage: React.FC = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Snackbar for error and success messages */}
             <Snackbar
                 open={!!error || !!successMessage}
                 autoHideDuration={6000}

@@ -31,6 +31,10 @@ const PublishersPage = () => {
         }
     };
 
+    const handleFormSuccess = () => {
+        setFormOpen(false);
+    };
+
     const createPublisherElements = state.publishers.map((publisher) => (
         <ListItem
             key={publisher._id}
@@ -89,14 +93,16 @@ const PublishersPage = () => {
                                 {isFormOpen ? "Close Form" : "Add New Publisher"}
                             </Button>
                             <Collapse in={isFormOpen}>
-                                <PublishersForm />
+                                <PublishersForm
+                                    mode="create"
+                                    onSuccess={handleFormSuccess}
+                                />
                             </Collapse>
                         </>
                     )}
                 </Grid>
             </Grid>
 
-            {/* Delete Confirmation Dialog */}
             <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
                 <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogContent>

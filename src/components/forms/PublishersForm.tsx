@@ -8,9 +8,11 @@ import {
     Typography,
     Box,
     Alert,
-    Snackbar
+    Snackbar,
+    Grid
 } from "@mui/material";
 import { useAuth } from "../../contexts/AuthContext";
+import { usePublishers } from "../../contexts/PublishersContext";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const currentYear = new Date().getFullYear();
@@ -24,14 +26,19 @@ interface FormErrors {
     websiteError: string;
 }
 
-type PublisherFormData = Omit<Publisher, "_id" | "createdAt" | "updatedAt" | "__v">;
+interface PublishersFormProps {
+    mode: "create" | "edit";
+    publisher?: Publisher;
+    onSuccess?: () => void;
+    onCancel?: () => void;
+}
 
-const PublishersForm: React.FC = () => {
-    const [formData, setFormData] = useState<PublisherFormData>({
-        name: "",
-        location: "",
-        establishedYear: undefined,
-        website: ""
+const PublishersForm: React.FC<PublishersFormProps> = ({ mode, publisher, onSuccess, onCancel }) => {
+    const [formData, setFormData] = useState<Partial<Publisher>>({
+        name: mode === "edit" ? publisher?.name : "",
+        location: mode === "edit" ? publisher?.location || "" : "",
+        establishedYear: mode === "edit" ? publisher?.establishedYear : undefined,
+        website: mode === "edit" ? publisher?.website || "" : ""
     });
 
     const [errors, setErrors] = useState<FormErrors>({
@@ -45,24 +52,26 @@ const PublishersForm: React.FC = () => {
 
     const [loading, setLoading] = useState(false);
     const [apiError, setApiError] = useState<string | null>(null);
+
+    const { updatePublisherData } = usePublishers();
+
     const [success, setSuccess] = useState(false);
     const { user } = useAuth();
     const isAdmin = user?.role === "admin";
 
     if (!isAdmin) {
         return (
-            <Alert severity="error">You do not have a permission to access this form</Alert>
+            <Alert severity="error">You do not have permission to access this form</Alert>
         )
     }
 
-
     const validateUrl = (url: string) => {
-        if (!url) return true; // Empty is valid (optional field)
+        if (!url) return true;
         return /^https?:\/\/[^\s$.?#].[^\s]*$/.test(url);
     };
 
     const validateYear = (year: number | undefined) => {
-        if (!year) return true; // Empty is valid (optional field)
+        if (!year) return true;
         return year >= 1000 && year <= currentYear;
     };
 
@@ -70,7 +79,6 @@ const PublishersForm: React.FC = () => {
         const { name, value } = e.target;
 
         if (name === 'establishedYear') {
-
             setFormData({
                 ...formData,
                 [name]: value === "" ? undefined : parseInt(value)
@@ -95,10 +103,10 @@ const PublishersForm: React.FC = () => {
         e.preventDefault();
 
         const newErrors = {
-            name: formData.name.trim() === "",
+            name: formData.name?.trim() === "",
             establishedYear: !validateYear(formData.establishedYear),
             website: !validateUrl(formData.website || ""),
-            nameError: formData.name.trim() === "" ? "Publisher name is required" : "",
+            nameError: formData.name?.trim() === "" ? "Publisher name is required" : "",
             yearError: !validateYear(formData.establishedYear)
                 ? `Year must be between 1000 and ${currentYear}`
                 : "",
@@ -114,17 +122,24 @@ const PublishersForm: React.FC = () => {
             setApiError(null);
 
             try {
-                const response = await axios.post(`${API_URL}/publishers`, formData);
-                console.log("Publisher created:", response.data);
-                setSuccess(true);
+                if (mode === "create") {
+                    const response = await axios.post(`${API_URL}/publishers`, formData);
+                    console.log("Publisher created:", response.data);
+                    setSuccess(true);
 
-                setFormData({
-                    name: "",
-                    location: "",
-                    establishedYear: undefined,
-                    website: ""
-                });
+                    setFormData({
+                        name: "",
+                        location: "",
+                        establishedYear: undefined,
+                        website: ""
+                    });
+                } else if (mode === "edit" && publisher) {
+                    await updatePublisherData(publisher._id, formData);
+                }
 
+                if (onSuccess) {
+                    onSuccess();
+                }
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     if (error.response?.data?.message) {
@@ -132,9 +147,9 @@ const PublishersForm: React.FC = () => {
                     } else if (error.response?.status === 409) {
                         setApiError("A publisher with this name already exists.");
                     } else {
-                        setApiError("An error occurred while creating the publisher.");
+                        setApiError(`An error occurred while ${mode === "create" ? "creating" : "updating"} the publisher.`);
                     }
-                    console.error("Error creating publisher:", error);
+                    console.error(`Error ${mode === "create" ? "creating" : "updating"} publisher:`, error);
                 }
             } finally {
                 setLoading(false);
@@ -148,10 +163,12 @@ const PublishersForm: React.FC = () => {
     };
 
     return (
-        <Paper elevation={3} sx={{ p: 4, maxWidth: 500, mx: "auto", my: 2 }}>
-            <Typography variant="h5" component="h2" gutterBottom align="center">
-                Add New Publisher
-            </Typography>
+        <Paper elevation={mode === "create" ? 3 : 0} sx={{ p: mode === "create" ? 4 : 1, maxWidth: 500, mx: "auto", my: mode === "create" ? 2 : 0 }}>
+            {mode === "create" && (
+                <Typography variant="h5" component="h2" gutterBottom align="center">
+                    Add New Publisher
+                </Typography>
+            )}
 
             {apiError && (
                 <Alert severity="error" sx={{ mb: 2 }}>
@@ -163,7 +180,7 @@ const PublishersForm: React.FC = () => {
                 <TextField
                     label="Publisher Name"
                     name="name"
-                    value={formData.name}
+                    value={formData.name || ""}
                     onChange={handleChange}
                     margin="normal"
                     fullWidth
@@ -175,7 +192,7 @@ const PublishersForm: React.FC = () => {
                 <TextField
                     label="Location"
                     name="location"
-                    value={formData.location}
+                    value={formData.location || ""}
                     onChange={handleChange}
                     margin="normal"
                     fullWidth
@@ -196,7 +213,7 @@ const PublishersForm: React.FC = () => {
                 <TextField
                     label="Website URL"
                     name="website"
-                    value={formData.website === undefined ? "" : formData.website}
+                    value={formData.website || ""}
                     onChange={handleChange}
                     margin="normal"
                     fullWidth
@@ -205,16 +222,43 @@ const PublishersForm: React.FC = () => {
                     helperText={errors.websiteError}
                 />
 
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{ mt: 2 }}
-                    disabled={loading}
-                >
-                    {loading ? "Adding Publisher..." : "Add Publisher"}
-                </Button>
+                {mode === "create" ? (
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        sx={{ mt: 2 }}
+                        disabled={loading}
+                    >
+                        {loading ? "Adding Publisher..." : "Add Publisher"}
+                    </Button>
+                ) : (
+                    <Grid container spacing={2} sx={{ mt: 1 }}>
+                        <Grid>
+                            <Button
+                                type="button"
+                                variant="outlined"
+                                color="secondary"
+                                fullWidth
+                                onClick={onCancel}
+                            >
+                                Cancel
+                            </Button>
+                        </Grid>
+                        <Grid>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                fullWidth
+                                disabled={loading}
+                            >
+                                {loading ? "Updating..." : "Update Publisher"}
+                            </Button>
+                        </Grid>
+                    </Grid>
+                )}
             </Box>
 
             <Snackbar
