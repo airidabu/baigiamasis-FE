@@ -5,6 +5,7 @@ import { Box, Typography, Paper, Grid, Card, CardContent, CircularProgress } fro
 import { useBooks } from "../contexts/BooksContext";
 import { usePublishers } from "../contexts/PublishersContext";
 import { useGenres } from "../contexts/GenresContext";
+import { useUsers } from "../contexts/UsersContext";
 
 const DashboardPage = () => {
     const { isAuthenticated, userRole, user } = useAuth();
@@ -12,6 +13,7 @@ const DashboardPage = () => {
     const { fetchBooks, state: booksState } = useBooks();
     const { fetchPublishers, state: publishersState } = usePublishers();
     const { fetchGenres, state: genresState } = useGenres();
+    const { fetchUsers, state: usersState } = useUsers();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -26,7 +28,8 @@ const DashboardPage = () => {
                 await Promise.all([
                     fetchBooks(),
                     fetchPublishers(),
-                    fetchGenres()
+                    fetchGenres(),
+                    userRole === 'admin' ? fetchUsers() : Promise.resolve()
                 ]);
             } catch (error) {
                 console.error("Error loading dashboard data:", error);
@@ -36,7 +39,7 @@ const DashboardPage = () => {
         };
 
         loadData();
-    }, [isAuthenticated, navigate, fetchBooks, fetchPublishers, fetchGenres]);
+    }, [isAuthenticated, navigate, userRole]);
 
     if (isLoading) {
         return (
@@ -74,6 +77,15 @@ const DashboardPage = () => {
                             <Typography variant="h6" color="primary">Genres</Typography>
                             <Typography variant="h3">{genresState.genres.length}</Typography>
                             <Typography variant="body2" sx={{ mt: 1 }}>Total genres in the system</Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid >
+                    <Card sx={{ height: "100%" }}>
+                        <CardContent>
+                            <Typography variant="h6" color="primary">Users</Typography>
+                            <Typography variant="h3">{usersState.users.length}</Typography>
+                            <Typography variant="body2" sx={{ mt: 1 }}>Total users in the system</Typography>
                         </CardContent>
                     </Card>
                 </Grid>
