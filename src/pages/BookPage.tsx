@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import Book from "../types/Book.ts";
 import { getBook, deleteBook } from "../api/books.ts";
 import Container from "@mui/material/Container";
-import { Card, CardContent, CardMedia, Typography, Box, Button } from "@mui/material";
+import { Card, CardContent, CardMedia, Typography, Box, Button, Divider } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext.tsx";
+import ReviewsContent from "../components/ReviewsContent.tsx"; // Import the ReviewsContent component
+import { ReviewsProvider } from "../contexts/ReviewsContext.tsx"; // Import the ReviewsProvider
 
 const BookPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -73,6 +75,12 @@ const BookPage: React.FC = () => {
                             )}
                         </CardContent>
                     </Card>
+
+                    <Divider sx={{ my: 4 }} />
+
+                    <ReviewsProvider>
+                        <ReviewsContent bookId={id!} />
+                    </ReviewsProvider>
                 </Container>
             )
         } else {

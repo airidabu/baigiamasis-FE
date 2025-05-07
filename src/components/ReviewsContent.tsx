@@ -3,9 +3,11 @@ import { useReviews } from "../contexts/ReviewsContext.tsx";
 import { useEffect } from "react";
 import ReviewForm from "./forms/ReviewForm.tsx";
 import Box from "@mui/material/Box";
-import { Button, Paper, Rating, Typography } from "@mui/material";
+import { Button, Paper, Rating, Stack, Typography, useTheme, useMediaQuery } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
+import { useAuth } from "../contexts/AuthContext.tsx";
 
 const StyledRating = styled(Rating)(({ theme }) => ({
     "& .MuiRating-iconFilled": {
@@ -18,48 +20,103 @@ const StyledRating = styled(Rating)(({ theme }) => ({
 
 const ReviewsContent: React.FC<{ bookId: string }> = ({ bookId }) => {
     const { state, fetchReviews, removeReview } = useReviews();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { userRole } = useAuth();
 
     useEffect(() => {
         fetchReviews(bookId);
     }, [bookId, fetchReviews]);
 
     const createReviewElements = state.reviews.map((review: Review) => (
-        <Paper sx={{ p: 2 }} key={review._id}>
-            <Typography component="span" variant="body2" color="text.secondary">
-                {review.user ? `${review.user.name} ${review.user.surname}` : review.nickname}
-            </Typography>
-            <Typography component="div" variant="body1" color="text.primary">
-                {review.comment}
-            </Typography>
-            <Box>
+        <Paper
+            sx={{
+                p: { xs: 1.5, sm: 2 },
+                borderRadius: 2,
+                boxShadow: 2
+            }}
+            key={review._id}
+        >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                <Typography component="span" variant="body2" color="text.secondary" fontWeight="medium">
+                    {review.user ? `${review.user.name} ${review.user.surname}` : review.nickname}
+                </Typography>
                 <StyledRating
                     name="customized-rating"
                     value={review.rating}
                     readOnly
                     precision={0.5}
+                    size={isMobile ? "small" : "medium"}
                     icon={<FavoriteIcon fontSize="inherit" />}
                     emptyIcon={<FavoriteIcon fontSize="inherit" />}
                 />
             </Box>
-            <Button variant="contained" color="secondary" onClick={() => removeReview(review._id!)}>❌</Button>
+
+            <Typography
+                component="div"
+                variant="body1"
+                color="text.primary"
+                sx={{
+                    mb: 1.5,
+                    wordBreak: "break-word"
+                }}
+            >
+                {review.comment}
+            </Typography>
+
+            {userRole === "admin" && (
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        size="small"
+                        startIcon={<DeleteIcon />}
+                        onClick={() => removeReview(review._id!)}
+                        sx={{
+                            minWidth: { xs: 32, sm: 64 },
+                            px: { xs: 1, sm: 2 }
+                        }}
+                    >
+                        {!isMobile && "Delete"}
+                    </Button>
+                </Box>
+            )}
         </Paper>
-    ))
+    ));
 
     return (
-        <Box sx={{ display: "flex", gap: 2 }}>
+        <Box sx={{
+            width: "100%",
+            maxWidth: 800,
+            mx: "auto",
+            px: { xs: 2, sm: 3, md: 4 }
+        }}>
+            <Box sx={{ mb: { xs: 3, sm: 4 } }}>
+                <ReviewForm bookId={bookId} />
+            </Box>
             <Box>
-                <Typography variant="h5" component="div" gutterBottom>
+                <Typography
+                    variant="h5"
+                    component="div"
+                    gutterBottom
+                    sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}
+                >
                     Reviews
                 </Typography>
-                <div>
-                    {createReviewElements}
-                </div>
-            </Box>
-            <Box>
-                <ReviewForm />
+                <Stack spacing={{ xs: 1.5, sm: 2 }}>
+                    {createReviewElements.length > 0
+                        ? createReviewElements
+                        : <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ py: 2, textAlign: 'center' }}
+                        >
+                            No reviews yet. Be the first to review!
+                        </Typography>}
+                </Stack>
             </Box>
         </Box>
-    )
-}
+    );
+};
 
 export default ReviewsContent;

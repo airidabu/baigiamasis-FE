@@ -25,7 +25,7 @@ export const getReview = async (id: string): Promise<Review | undefined> => {
 
 export const getBookReviews = async (id: string): Promise<Review[]> => {
     try {
-        const { data } = await axios.get(`${API_URL}/reviews?bookId=${id}`);
+        const { data } = await axios.get(`${API_URL}/reviews/book/${id}`);
         return data;
     } catch (error) {
         console.error(error);

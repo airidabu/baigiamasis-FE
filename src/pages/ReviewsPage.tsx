@@ -16,7 +16,7 @@ const ReviewsPage: React.FC = () => {
     const createReviewElements = reviews.map((review: Review) => (
         <Paper key={review._id} sx={{ p: 2 }} elevation={3}>
             <ReviewCard
-                nickname={review.user ? `${review.user.name} ${review.user.surname}` : review.nickname || ""}
+                name={review.user ? `${review.user.name} ${review.user.surname}` : review.nickname || ""}
                 email={review.email || ""}
                 bookId={review.book?._id || ""}
                 text={review.comment}
