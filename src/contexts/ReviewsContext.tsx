@@ -1,50 +1,50 @@
-import {ReviewAction, reviewReducer, ReviewState, initialState} from "../reducers/reviewReducer.ts";
-import {addReview, deleteReview, getBookReviews} from "../api/reviews.ts";
+import { ReviewAction, reviewReducer, ReviewState, initialState } from "../reducers/reviewReducer.ts";
+import { addReview, deleteReview, getBookReviews } from "../api/reviews.ts";
 import Review from "../types/Review.ts";
-import {createContext, Dispatch, ReactNode, useContext, useReducer} from "react";
+import { createContext, Dispatch, ReactNode, useContext, useReducer, useCallback } from "react";
 
 type ReviewsContextType = {
     state: ReviewState;
     dispatch: Dispatch<ReviewAction>
-    fetchReviews: (id:string) => Promise<void>;
-    createReview: (review: Omit<Review, "id">) => Promise<void>;
+    fetchReviews: (id: string) => Promise<void>;
+    createReview: (review: Omit<Review, "_id">) => Promise<void>;
     removeReview: (id: string) => Promise<void>;
 }
 
 const ReviewsContext = createContext<ReviewsContextType | undefined>(undefined);
 
-export const ReviewsProvider: React.FC<{children: ReactNode}> = ({ children }) => {
+export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(reviewReducer, initialState);
 
-    const fetchReviews = async (id:string) => {
+    const fetchReviews = useCallback(async (id: string) => {
         try {
             const reviews = await getBookReviews(id);
-            dispatch({type: "GET_REVIEWS", payload: reviews});
+            dispatch({ type: "GET_REVIEWS", payload: reviews });
         } catch (error) {
             console.error(error);
         }
-    }
+    }, []);
 
     const removeReview = async (id: string) => {
         try {
             await deleteReview(id);
-            dispatch({type: "REMOVE_REVIEW", payload: id});
+            dispatch({ type: "REMOVE_REVIEW", payload: id });
         } catch (error) {
             console.error(error);
         }
     }
 
-    const createReview = async (review: Omit<Review, "id">) => {
+    const createReview = async (review: Omit<Review, "_id">) => {
         try {
-            const newReview = await addReview(review);
-            dispatch({type: "ADD_REVIEW", payload: newReview})
+            const newReview = await addReview(review as Review);
+            dispatch({ type: "ADD_REVIEW", payload: newReview })
         } catch (error) {
             console.error(error);
         }
     }
 
     return (
-        <ReviewsContext.Provider value={{state, dispatch, fetchReviews, createReview, removeReview}}>
+        <ReviewsContext.Provider value={{ state, dispatch, fetchReviews, createReview, removeReview }}>
             {children}
         </ReviewsContext.Provider>
     )

@@ -1,9 +1,9 @@
-import {useState} from "react";
-import {useReviews} from "../../contexts/ReviewsContext.tsx";
-import {useParams} from "react-router";
+import { useState } from "react";
+import { useReviews } from "../../contexts/ReviewsContext.tsx";
+import { useParams } from "react-router";
 import Box from "@mui/material/Box";
-import {Button, Rating, TextField} from "@mui/material";
-import {styled} from "@mui/material/styles";
+import { Button, Rating, TextField } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const StyledRating = styled(Rating)(({ theme }) => ({
@@ -15,12 +15,12 @@ const StyledRating = styled(Rating)(({ theme }) => ({
     }
 }));
 
-const ReviewForm: React.FC = () =>{
+const ReviewForm: React.FC = () => {
     const { id } = useParams();
-    const[form, setForm] = useState({
+    const [form, setForm] = useState({
         nickname: "",
         email: "",
-        text:"",
+        comment: "",
         rating: 2.5
     })
 
@@ -49,14 +49,14 @@ const ReviewForm: React.FC = () =>{
             }
         ))
     }
-    const {createReview} = useReviews();
+    const { createReview } = useReviews();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const newReview = {
             nickname: form.nickname,
             email: form.email,
-            text: form.text,
+            comment: form.comment,
             rating: form.rating,
             bookId: id!
         }
@@ -69,16 +69,16 @@ const ReviewForm: React.FC = () =>{
             ...form,
             nickname: "",
             email: "",
-            text: "",
+            comment: "",
             rating: 2.5
         })
-
     }
+
     return (
         <Box
             component="form"
             onSubmit={handleSubmit}
-            sx={{display: "flex", flexDirection: "column", gap: 2, maxWidth: "400px"}}
+            sx={{ display: "flex", flexDirection: "column", gap: 2, maxWidth: "400px" }}
         >
             <TextField
                 label="Nickname"
@@ -98,11 +98,11 @@ const ReviewForm: React.FC = () =>{
             />
             <TextField
                 multiline
-                label="Text"
+                label="Comment"
                 variant="outlined"
                 fullWidth
-                name="text"
-                value={form.text}
+                name="comment"
+                value={form.comment}
                 onChange={handleTextAreaChange}
             />
             <StyledRating
