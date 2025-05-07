@@ -2,6 +2,7 @@ import { ReviewAction, reviewReducer, ReviewState, initialState } from "../reduc
 import { addReview, deleteReview, getBookReviews } from "../api/reviews.ts";
 import Review from "../types/Review.ts";
 import { createContext, Dispatch, ReactNode, useContext, useReducer, useCallback } from "react";
+import { useAuth } from "./AuthContext.tsx";
 
 type ReviewsContextType = {
     state: ReviewState;
@@ -15,6 +16,7 @@ const ReviewsContext = createContext<ReviewsContextType | undefined>(undefined);
 
 export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(reviewReducer, initialState);
+    const { user } = useAuth();
 
     const fetchReviews = useCallback(async (id: string) => {
         try {
@@ -37,6 +39,15 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children })
     const createReview = async (review: Omit<Review, "_id">) => {
         try {
             const newReview = await addReview(review as Review);
+
+            if (typeof newReview.user === 'string' && user) {
+                newReview.user = {
+                    _id: user.id,
+                    name: user.name,
+                    surname: user.surname
+                };
+            }
+
             dispatch({ type: "ADD_REVIEW", payload: newReview })
         } catch (error) {
             console.error(error);
