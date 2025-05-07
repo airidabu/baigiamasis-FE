@@ -5,15 +5,31 @@ import { useEffect, useState } from "react";
 import { usePublishers } from "../contexts/PublishersContext";
 import { DeleteForever } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 
 const PublishersPage = () => {
     const { userRole, isAuthenticated } = useAuth();
     const [isFormOpen, setFormOpen] = useState(false);
-    const { fetchPublishers, state } = usePublishers();
+    const { fetchPublishers, state, removePublisher } = usePublishers();
+    const [deletePublisherId, setDeletePublisherId] = useState<string | null>(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     useEffect(() => {
         fetchPublishers();
     }, [fetchPublishers]);
+
+    const handleOpenDeleteDialog = (id: string) => {
+        setDeletePublisherId(id);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (deletePublisherId) {
+            await removePublisher(deletePublisherId);
+            setDeleteDialogOpen(false);
+            setDeletePublisherId(null);
+        }
+    };
 
     const createPublisherElements = state.publishers.map((publisher) => (
         <ListItem
@@ -21,8 +37,8 @@ const PublishersPage = () => {
             disableGutters
             secondaryAction={
                 isAuthenticated && userRole === "admin" ? (
-                    <IconButton>
-                        <DeleteForever color="primary" />
+                    <IconButton onClick={() => handleOpenDeleteDialog(publisher._id)}>
+                        <DeleteForever color="error" />
                     </IconButton>
                 ) : null
             }
@@ -30,6 +46,9 @@ const PublishersPage = () => {
             <Link
                 component={RouterLink}
                 to={`/publishers/${publisher._id}`}
+                underline="hover"
+                color="primary"
+                sx={{ cursor: 'pointer' }}
             >
                 <ListItemText primary={publisher.name} />
             </Link>
@@ -77,6 +96,17 @@ const PublishersPage = () => {
                 </Grid>
             </Grid>
 
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+                <DialogTitle>Confirm Delete</DialogTitle>
+                <DialogContent>
+                    Are you sure you want to delete this publisher? This action cannot be undone.
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={handleConfirmDelete} color="error">Delete</Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     )
 }

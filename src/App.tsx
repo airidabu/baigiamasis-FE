@@ -17,6 +17,7 @@ import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import EditBookPage from "./pages/EditBookPage.tsx";
 import PublishersPage from "./pages/PublishersPage.tsx";
 import { PublishersProvider } from "./contexts/PublishersContext.tsx";
+import PublisherPage from "./pages/PublisherPage.tsx";
 
 const App: React.FC = () => {
 
@@ -33,6 +34,7 @@ const App: React.FC = () => {
             <Route path="/books/:id" element={<BookPage />} />
             <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/publishers" element={<PublishersPage />} />
+            <Route path="/publishers/:id" element={<PublisherPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
             <Route element={<ProtectedRoute allowedRoles={["admin", "author"]} />}>
               <Route path="/books/edit/:id" element={<EditBookPage />} />
