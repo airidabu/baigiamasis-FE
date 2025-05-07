@@ -29,6 +29,10 @@ const pages = [
     {
         name: "Reviews",
         link: "/reviews"
+    },
+    {
+        name: "Publishers",
+        link: "/publishers"
     }
 ];
 

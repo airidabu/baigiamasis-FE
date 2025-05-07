@@ -19,7 +19,7 @@ const HomePage: React.FC = () => {
                 sx={{
                     width: "100%",
                     height: "auto",
-                    maxWidth: {xs: "100%", md: "80%"},
+                    maxWidth: { xs: "100%", md: "80%" },
                     display: "block",
                     mx: "auto",
                 }}
