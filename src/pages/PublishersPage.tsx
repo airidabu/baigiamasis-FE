@@ -1,14 +1,15 @@
-import { Box, Paper, Button, Collapse, ListItem, ListItemText, IconButton, Container, Typography, List, Grid } from "@mui/material";
+import { Paper, Button, Collapse, Link, ListItem, ListItemText, IconButton, Container, Typography, List, Grid } from "@mui/material";
 import PublishersForm from "../components/forms/PublishersForm";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { usePublishers } from "../contexts/PublishersContext";
 import { DeleteForever } from "@mui/icons-material";
+import { Link as RouterLink } from "react-router";
 
 const PublishersPage = () => {
     const { userRole, isAuthenticated } = useAuth();
     const [isFormOpen, setFormOpen] = useState(false);
-    const { fetchPublishers, state, removePublisher, updatePublisherData } = usePublishers();
+    const { fetchPublishers, state } = usePublishers();
 
     useEffect(() => {
         fetchPublishers();
@@ -26,7 +27,12 @@ const PublishersPage = () => {
                 ) : null
             }
         >
-            <ListItemText primary={publisher.name} />
+            <Link
+                component={RouterLink}
+                to={`/publishers/${publisher._id}`}
+            >
+                <ListItemText primary={publisher.name} />
+            </Link>
         </ListItem>
     ))
 
