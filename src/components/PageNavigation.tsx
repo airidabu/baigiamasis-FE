@@ -9,9 +9,11 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/material/styles";
-import { Button, FormControlLabel, Switch } from "@mui/material";
+import { Button, Switch } from "@mui/material";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { useAuth } from "../contexts/AuthContext";
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 
 const publicPages = [
     {
@@ -142,21 +144,13 @@ const PageNavigation: React.FC = () => {
                             )}
                         </Box>
                         <Box>
-                            <FormControlLabel
-                                control={<Switch
-                                    checked={themeMode === "dark"}
-                                    onChange={toggleTheme}
-                                    aria-label="Change theme"
-                                />}
-                                label="Change Theme"
-                                labelPlacement="bottom"
-                                sx={{
-                                    alignItems: "center",
-                                    "& .MuiTypography-root": {
-                                        fontWeight: 500
-                                    }
-                                }}
+                            <LightModeIcon />
+                            <Switch
+                                checked={themeMode === "dark"}
+                                onChange={toggleTheme}
+                                aria-label="Change theme"
                             />
+                            <DarkModeIcon />
                         </Box>
                     </Toolbar>
                 </nav>

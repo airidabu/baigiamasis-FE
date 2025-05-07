@@ -1,11 +1,13 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Box, Typography, Paper, Grid, Card, CardContent, CircularProgress } from "@mui/material";
+import { Box, Typography, Paper, Grid, Card, CardContent, CircularProgress, Button } from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
 import { useBooks } from "../contexts/BooksContext";
 import { usePublishers } from "../contexts/PublishersContext";
 import { useGenres } from "../contexts/GenresContext";
 import { useUsers } from "../contexts/UsersContext";
+import EditProfileForm from "../components/forms/EditProfileForm";
 
 const DashboardPage = () => {
     const { isAuthenticated, userRole, user } = useAuth();
@@ -15,6 +17,7 @@ const DashboardPage = () => {
     const { fetchGenres, state: genresState } = useGenres();
     const { fetchUsers, state: usersState } = useUsers();
     const [isLoading, setIsLoading] = useState(true);
+    const [editProfileOpen, setEditProfileOpen] = useState(false);
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -40,6 +43,10 @@ const DashboardPage = () => {
 
         loadData();
     }, [isAuthenticated, navigate, userRole]);
+
+    const handleEditProfileSuccess = () => {
+        // You might want to refresh user data here if needed
+    };
 
     if (isLoading) {
         return (
@@ -151,18 +158,32 @@ const DashboardPage = () => {
 
     return (
         <Paper elevation={3} sx={{ p: 3, maxWidth: 1200, mx: "auto", my: 3 }}>
-            <Box sx={{ mb: 4 }}>
+            <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <Typography variant="h3" gutterBottom>
                     Welcome, {user?.name}!
                 </Typography>
-                <Typography variant="body1" color="text.secondary">
-                    This is your personalized dashboard. Here you can see an overview of your account and the platform.
-                </Typography>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<EditIcon />}
+                    onClick={() => setEditProfileOpen(true)}
+                >
+                    Edit Profile
+                </Button>
             </Box>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                This is your personalized dashboard. Here you can see an overview of your account and the platform.
+            </Typography>
 
             {userRole === "admin" && renderAdminDashboard()}
             {userRole === "author" && renderAuthorDashboard()}
             {userRole === "user" && renderUserDashboard()}
+
+            <EditProfileForm
+                open={editProfileOpen}
+                onClose={() => setEditProfileOpen(false)}
+                onSuccess={handleEditProfileSuccess}
+            />
         </Paper>
     );
 };

@@ -22,3 +22,22 @@ export const getUser = async (id: string): Promise<User | undefined> => {
         return undefined;
     }
 }
+
+export interface UpdateUserData {
+    name?: string;
+    surname?: string;
+    email?: string;
+    birthday?: Date | null;
+    password?: string;
+    currentPassword?: string;
+}
+
+export const updateUser = async (id: string, userData: UpdateUserData): Promise<User | undefined> => {
+    try {
+        const { data } = await axios.put(`${API_URL}/users/update/${id}`, userData);
+        return data;
+    } catch (error) {
+        console.error("Error updating user", error);
+        throw error;
+    }
+}
