@@ -21,7 +21,7 @@ const GenresPageContent: React.FC = () => {
         };
 
         loadGenres();
-    }, [fetchGenres]);
+    }, []);
 
     const createGenreElements = state.genres.map((genre) => (
         <ListItem

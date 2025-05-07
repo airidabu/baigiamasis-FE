@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Book from "../types/Book.ts";
 import { getBook, deleteBook } from "../api/books.ts";
 import Container from "@mui/material/Container";
-import { Card, CardContent, CardMedia, Typography, Box, Button, Divider } from "@mui/material";
+import { Card, CardContent, CardMedia, Typography, Box, Button, Divider, CircularProgress } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext.tsx";
 import ReviewsContent from "../components/ReviewsContent.tsx"; // Import the ReviewsContent component
 import { ReviewsProvider } from "../contexts/ReviewsContext.tsx"; // Import the ReviewsProvider
@@ -11,11 +11,15 @@ import { ReviewsProvider } from "../contexts/ReviewsContext.tsx"; // Import the 
 const BookPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [book, setBook] = useState<Book | undefined>();
+    const [loading, setLoading] = useState<boolean>(true);
     const { userRole, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
-        getBook(id!).then(fetchedBook => setBook(fetchedBook));
+        setLoading(true);
+        getBook(id!)
+            .then(fetchedBook => setBook(fetchedBook))
+            .finally(() => setLoading(false));
     }, [id])
 
     const handleEdit = () => {
@@ -30,6 +34,14 @@ const BookPage: React.FC = () => {
     };
 
     const createBookCard = () => {
+        if (loading) {
+            return (
+                <Container maxWidth="lg" sx={{ py: 4, display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
+                    <CircularProgress size={60} />
+                </Container>
+            );
+        }
+        
         if (book) {
             return (
                 <Container maxWidth="lg" sx={{ py: 4 }}>
