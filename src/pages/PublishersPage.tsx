@@ -1,4 +1,4 @@
-import { Paper, Button, Collapse, Link, ListItem, ListItemText, IconButton, Container, Typography, List, Grid } from "@mui/material";
+import { Paper, Button, Collapse, Link, ListItem, ListItemText, IconButton, Container, Typography, List, Grid, Divider } from "@mui/material";
 import PublishersForm from "../components/forms/PublishersForm";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
@@ -36,27 +36,30 @@ const PublishersPage = () => {
     };
 
     const createPublisherElements = state.publishers.map((publisher) => (
-        <ListItem
-            key={publisher._id}
-            disableGutters
-            secondaryAction={
-                isAuthenticated && userRole === "admin" ? (
-                    <IconButton onClick={() => handleOpenDeleteDialog(publisher._id)}>
-                        <DeleteForever color="error" />
-                    </IconButton>
-                ) : null
-            }
-        >
-            <Link
-                component={RouterLink}
-                to={`/publishers/${publisher._id}`}
-                underline="hover"
-                color="primary"
-                sx={{ cursor: 'pointer' }}
+        <>
+            <ListItem
+                key={publisher._id}
+                disableGutters
+                secondaryAction={
+                    isAuthenticated && userRole === "admin" ? (
+                        <IconButton onClick={() => handleOpenDeleteDialog(publisher._id)}>
+                            <DeleteForever color="error" />
+                        </IconButton>
+                    ) : null
+                }
             >
-                <ListItemText primary={publisher.name} />
-            </Link>
-        </ListItem>
+                <Link
+                    component={RouterLink}
+                    to={`/publishers/${publisher._id}`}
+                    underline="hover"
+                    color="primary"
+                    sx={{ cursor: 'pointer' }}
+                >
+                    <ListItemText primary={publisher.name} />
+                </Link>
+            </ListItem>
+            <Divider />
+        </>
     ))
 
     return (
@@ -64,7 +67,7 @@ const PublishersPage = () => {
             <Typography variant="h4" sx={{ my: 3, fontWeight: 500, color: "primary.main" }}>
                 Publishers
             </Typography>
-            <Grid container spacing={3}>
+            <Grid container spacing={3} sx={{ justifyContent: "center", alignItems: "center" }}>
                 <Grid>
                     <Paper
                         elevation={3}
@@ -82,25 +85,23 @@ const PublishersPage = () => {
                         )}
                     </Paper>
                 </Grid>
-                <Grid>
-                    {isAuthenticated && userRole === "admin" && (
-                        <>
-                            <Button
-                                variant="contained"
-                                onClick={() => setFormOpen((prev) => !prev)}
-                                sx={{ mb: 2, width: "100%" }}
-                            >
-                                {isFormOpen ? "Close Form" : "Add New Publisher"}
-                            </Button>
-                            <Collapse in={isFormOpen}>
-                                <PublishersForm
-                                    mode="create"
-                                    onSuccess={handleFormSuccess}
-                                />
-                            </Collapse>
-                        </>
-                    )}
-                </Grid>
+                {isAuthenticated && userRole === "admin" && (
+                    <Grid>
+                        <Button
+                            variant="contained"
+                            onClick={() => setFormOpen((prev) => !prev)}
+                            sx={{ mb: 2, width: "100%" }}
+                        >
+                            {isFormOpen ? "Close Form" : "Add New Publisher"}
+                        </Button>
+                        <Collapse in={isFormOpen}>
+                            <PublishersForm
+                                mode="create"
+                                onSuccess={handleFormSuccess}
+                            />
+                        </Collapse>
+                    </Grid>
+                )}
             </Grid>
 
             <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
