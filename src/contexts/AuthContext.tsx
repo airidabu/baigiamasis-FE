@@ -10,6 +10,7 @@ interface User {
     surname: string;
     email: string;
     role: UserRole;
+    birthday?: string | null;
 }
 
 interface TokenPayload {
@@ -18,6 +19,7 @@ interface TokenPayload {
     surname: string;
     email: string;
     roles: UserRole;
+    birthday?: string | null;
     exp: number;
 }
 
@@ -60,6 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 surname: decoded.surname,
                 email: decoded.email,
                 role: decoded.roles,
+                birthday: decoded.birthday || null,
             };
         } catch (error) {
             console.error("Error decoding token:", error);

@@ -9,11 +9,13 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/material/styles";
-import { Button, FormControlLabel, Switch } from "@mui/material";
+import { Button, Switch } from "@mui/material";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { useAuth } from "../contexts/AuthContext";
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 
-const pages = [
+const publicPages = [
     {
         name: "Home",
         link: "/"
@@ -33,6 +35,13 @@ const pages = [
     {
         name: "Publishers",
         link: "/publishers"
+    }
+];
+
+const authPages = [
+    {
+        name: "Dashboard",
+        link: "/dashboard"
     }
 ];
 
@@ -64,6 +73,7 @@ const PageNavigation: React.FC = () => {
         navigate("/");
     }
 
+    const pages = [...publicPages, ...(isAuthenticated ? authPages : [])];
 
     const createLinkElements = pages.map((page) => (
         <MenuItem
@@ -133,22 +143,15 @@ const PageNavigation: React.FC = () => {
                                 </Button>
                             )}
                         </Box>
-                        <Box>
-                            <FormControlLabel
-                                control={<Switch
-                                    checked={themeMode === "dark"}
-                                    onChange={toggleTheme}
-                                    aria-label="Change theme"
-                                />}
-                                label="Change Theme"
-                                labelPlacement="bottom"
-                                sx={{
-                                    alignItems: "center",
-                                    "& .MuiTypography-root": {
-                                        fontWeight: 500
-                                    }
-                                }}
+                        <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+                            <LightModeIcon fontSize="small" />
+                            <Switch
+                                checked={themeMode === "dark"}
+                                onChange={toggleTheme}
+                                aria-label="Change theme"
+                                size="small"
                             />
+                            <DarkModeIcon fontSize="small" />
                         </Box>
                     </Toolbar>
                 </nav>

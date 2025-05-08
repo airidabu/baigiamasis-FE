@@ -13,10 +13,12 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
+import { useNavigate } from "react-router";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const RegistrationForm: React.FC = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
         surname: "",
@@ -103,7 +105,11 @@ const RegistrationForm: React.FC = () => {
 
                 console.log("Registration response:", res.data);
                 setRegistrationSuccess(true);
-                //TODO: Redirect to login page or show success message
+
+                // Set a short timeout to show the success message before redirecting
+                setTimeout(() => {
+                    navigate("/login");
+                }, 1500);
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     if (error.response) {
