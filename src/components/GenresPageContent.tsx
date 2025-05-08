@@ -3,7 +3,7 @@ import { useGenres } from "../contexts/GenresContext.tsx";
 import { useEffect, useState } from "react";
 import ItemsList from "./ItemsList.tsx";
 import Box from "@mui/material/Box";
-import { Divider, ListItem, ListItemText, CircularProgress, Typography } from "@mui/material";
+import { Divider, ListItem, ListItemText, CircularProgress, Typography, Container } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useAuth } from "../contexts/AuthContext.tsx";
@@ -24,23 +24,26 @@ const GenresPageContent: React.FC = () => {
     }, []);
 
     const createGenreElements = state.genres.map((genre) => (
-        <ListItem
-            key={genre._id}
-            disableGutters
-            secondaryAction={
-                isAuthenticated && userRole === "admin" ? (
-                    <IconButton onClick={() => removeGenre(genre._id!)} aria-label="delete">
-                        <DeleteForeverIcon color="primary" />
-                    </IconButton>
-                ) : null
-            }
-        >
-            <ListItemText primary={genre.name} />
-        </ListItem >
+        <>
+            <ListItem
+                key={genre._id}
+                disableGutters
+                secondaryAction={
+                    isAuthenticated && userRole === "admin" ? (
+                        <IconButton onClick={() => removeGenre(genre._id!)} aria-label="delete">
+                            <DeleteForeverIcon color="primary" />
+                        </IconButton>
+                    ) : null
+                }
+            >
+                <ListItemText primary={genre.name} />
+            </ListItem >
+            <Divider />
+        </>
     ))
 
     return (
-        <>
+        <Container>
             {isLoading ? (
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "50vh" }}>
                     <CircularProgress size={60} />
@@ -69,7 +72,7 @@ const GenresPageContent: React.FC = () => {
                     )}
                 </Box>
             )}
-        </>
+        </Container>
     )
 }
 
