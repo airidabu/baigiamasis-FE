@@ -44,7 +44,9 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children })
                 newReview.user = {
                     _id: user.id,
                     name: user.name,
-                    surname: user.surname
+                    surname: user.surname,
+                    email: user.email,
+                    role: user.role || 'user'
                 };
             }
 
