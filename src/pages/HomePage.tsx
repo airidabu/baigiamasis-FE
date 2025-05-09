@@ -1,5 +1,6 @@
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
+import smileyFace from "../assets/smiley-face.png";
 
 const HomePage: React.FC = () => {
     return (
@@ -14,7 +15,7 @@ const HomePage: React.FC = () => {
             </Box>
             <Box
                 component="img"
-                src="src/assets/smiley-face.png"
+                src={smileyFace}
                 alt="smiley face"
                 sx={{
                     width: "100%",
